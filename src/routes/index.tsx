@@ -6,5 +6,5 @@ export const Route = createFileRoute("/")({
       to: "/dashboard",
     });
   },
-  component: () => <div>Redireting to dahboard.</div>,
+  component: () => <div>Redireting to dashboard.</div>,
 });

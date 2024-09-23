@@ -13,11 +13,22 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as LayoutImport } from './routes/_layout'
 import { Route as IndexImport } from './routes/index'
+import { Route as LayoutWarehouseImport } from './routes/_layout/warehouse'
+import { Route as LayoutOrdersImport } from './routes/_layout/orders'
+import { Route as LayoutDashboardImport } from './routes/_layout/dashboard'
 import { Route as LayoutWarehouseIndexImport } from './routes/_layout/warehouse/index'
-import { Route as LayoutUsersIndexImport } from './routes/_layout/users/index'
+import { Route as LayoutSettingsIndexImport } from './routes/_layout/settings/index'
 import { Route as LayoutOrdersIndexImport } from './routes/_layout/orders/index'
-import { Route as LayoutMangementIndexImport } from './routes/_layout/mangement/index'
 import { Route as LayoutDashboardIndexImport } from './routes/_layout/dashboard/index'
+import { Route as LayoutCustomersIndexImport } from './routes/_layout/customers/index'
+import { Route as LayoutSettingsLogoutImport } from './routes/_layout/settings/logout'
+import { Route as LayoutWarehouseProductsIndexImport } from './routes/_layout/warehouse/products/index'
+import { Route as LayoutWarehouseCategoriesIndexImport } from './routes/_layout/warehouse/categories/index'
+import { Route as LayoutSettingsProfileIndexImport } from './routes/_layout/settings/profile/index'
+import { Route as LayoutSettingsManagementIndexImport } from './routes/_layout/settings/management/index'
+import { Route as LayoutDashboardReportsIndexImport } from './routes/_layout/dashboard/reports/index'
+import { Route as LayoutDashboardOverviewIndexImport } from './routes/_layout/dashboard/overview/index'
+import { Route as LayoutDashboardAnalyticsIndexImport } from './routes/_layout/dashboard/analytics/index'
 
 // Create/Update Routes
 
@@ -31,30 +42,93 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const LayoutWarehouseIndexRoute = LayoutWarehouseIndexImport.update({
-  path: '/warehouse/',
+const LayoutWarehouseRoute = LayoutWarehouseImport.update({
+  path: '/warehouse',
   getParentRoute: () => LayoutRoute,
 } as any)
 
-const LayoutUsersIndexRoute = LayoutUsersIndexImport.update({
-  path: '/users/',
+const LayoutOrdersRoute = LayoutOrdersImport.update({
+  path: '/orders',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutDashboardRoute = LayoutDashboardImport.update({
+  path: '/dashboard',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutWarehouseIndexRoute = LayoutWarehouseIndexImport.update({
+  path: '/',
+  getParentRoute: () => LayoutWarehouseRoute,
+} as any)
+
+const LayoutSettingsIndexRoute = LayoutSettingsIndexImport.update({
+  path: '/settings/',
   getParentRoute: () => LayoutRoute,
 } as any)
 
 const LayoutOrdersIndexRoute = LayoutOrdersIndexImport.update({
-  path: '/orders/',
-  getParentRoute: () => LayoutRoute,
-} as any)
-
-const LayoutMangementIndexRoute = LayoutMangementIndexImport.update({
-  path: '/mangement/',
-  getParentRoute: () => LayoutRoute,
+  path: '/',
+  getParentRoute: () => LayoutOrdersRoute,
 } as any)
 
 const LayoutDashboardIndexRoute = LayoutDashboardIndexImport.update({
-  path: '/dashboard/',
+  path: '/',
+  getParentRoute: () => LayoutDashboardRoute,
+} as any)
+
+const LayoutCustomersIndexRoute = LayoutCustomersIndexImport.update({
+  path: '/customers/',
   getParentRoute: () => LayoutRoute,
 } as any)
+
+const LayoutSettingsLogoutRoute = LayoutSettingsLogoutImport.update({
+  path: '/settings/logout',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutWarehouseProductsIndexRoute =
+  LayoutWarehouseProductsIndexImport.update({
+    path: '/products/',
+    getParentRoute: () => LayoutWarehouseRoute,
+  } as any)
+
+const LayoutWarehouseCategoriesIndexRoute =
+  LayoutWarehouseCategoriesIndexImport.update({
+    path: '/categories/',
+    getParentRoute: () => LayoutWarehouseRoute,
+  } as any)
+
+const LayoutSettingsProfileIndexRoute = LayoutSettingsProfileIndexImport.update(
+  {
+    path: '/settings/profile/',
+    getParentRoute: () => LayoutRoute,
+  } as any,
+)
+
+const LayoutSettingsManagementIndexRoute =
+  LayoutSettingsManagementIndexImport.update({
+    path: '/settings/management/',
+    getParentRoute: () => LayoutRoute,
+  } as any)
+
+const LayoutDashboardReportsIndexRoute =
+  LayoutDashboardReportsIndexImport.update({
+    path: '/reports/',
+    getParentRoute: () => LayoutDashboardRoute,
+  } as any)
+
+const LayoutDashboardOverviewIndexRoute =
+  LayoutDashboardOverviewIndexImport.update({
+    path: '/overview/',
+    getParentRoute: () => LayoutDashboardRoute,
+  } as any)
+
+const LayoutDashboardAnalyticsIndexRoute =
+  LayoutDashboardAnalyticsIndexImport.update({
+    path: '/analytics/',
+    getParentRoute: () => LayoutDashboardRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -74,40 +148,117 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutImport
       parentRoute: typeof rootRoute
     }
-    '/_layout/dashboard/': {
-      id: '/_layout/dashboard/'
+    '/_layout/dashboard': {
+      id: '/_layout/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
-      preLoaderRoute: typeof LayoutDashboardIndexImport
+      preLoaderRoute: typeof LayoutDashboardImport
       parentRoute: typeof LayoutImport
     }
-    '/_layout/mangement/': {
-      id: '/_layout/mangement/'
-      path: '/mangement'
-      fullPath: '/mangement'
-      preLoaderRoute: typeof LayoutMangementIndexImport
+    '/_layout/orders': {
+      id: '/_layout/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof LayoutOrdersImport
       parentRoute: typeof LayoutImport
+    }
+    '/_layout/warehouse': {
+      id: '/_layout/warehouse'
+      path: '/warehouse'
+      fullPath: '/warehouse'
+      preLoaderRoute: typeof LayoutWarehouseImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/settings/logout': {
+      id: '/_layout/settings/logout'
+      path: '/settings/logout'
+      fullPath: '/settings/logout'
+      preLoaderRoute: typeof LayoutSettingsLogoutImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/customers/': {
+      id: '/_layout/customers/'
+      path: '/customers'
+      fullPath: '/customers'
+      preLoaderRoute: typeof LayoutCustomersIndexImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/dashboard/': {
+      id: '/_layout/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof LayoutDashboardIndexImport
+      parentRoute: typeof LayoutDashboardImport
     }
     '/_layout/orders/': {
       id: '/_layout/orders/'
-      path: '/orders'
-      fullPath: '/orders'
+      path: '/'
+      fullPath: '/orders/'
       preLoaderRoute: typeof LayoutOrdersIndexImport
-      parentRoute: typeof LayoutImport
+      parentRoute: typeof LayoutOrdersImport
     }
-    '/_layout/users/': {
-      id: '/_layout/users/'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof LayoutUsersIndexImport
+    '/_layout/settings/': {
+      id: '/_layout/settings/'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof LayoutSettingsIndexImport
       parentRoute: typeof LayoutImport
     }
     '/_layout/warehouse/': {
       id: '/_layout/warehouse/'
-      path: '/warehouse'
-      fullPath: '/warehouse'
+      path: '/'
+      fullPath: '/warehouse/'
       preLoaderRoute: typeof LayoutWarehouseIndexImport
+      parentRoute: typeof LayoutWarehouseImport
+    }
+    '/_layout/dashboard/analytics/': {
+      id: '/_layout/dashboard/analytics/'
+      path: '/analytics'
+      fullPath: '/dashboard/analytics'
+      preLoaderRoute: typeof LayoutDashboardAnalyticsIndexImport
+      parentRoute: typeof LayoutDashboardImport
+    }
+    '/_layout/dashboard/overview/': {
+      id: '/_layout/dashboard/overview/'
+      path: '/overview'
+      fullPath: '/dashboard/overview'
+      preLoaderRoute: typeof LayoutDashboardOverviewIndexImport
+      parentRoute: typeof LayoutDashboardImport
+    }
+    '/_layout/dashboard/reports/': {
+      id: '/_layout/dashboard/reports/'
+      path: '/reports'
+      fullPath: '/dashboard/reports'
+      preLoaderRoute: typeof LayoutDashboardReportsIndexImport
+      parentRoute: typeof LayoutDashboardImport
+    }
+    '/_layout/settings/management/': {
+      id: '/_layout/settings/management/'
+      path: '/settings/management'
+      fullPath: '/settings/management'
+      preLoaderRoute: typeof LayoutSettingsManagementIndexImport
       parentRoute: typeof LayoutImport
+    }
+    '/_layout/settings/profile/': {
+      id: '/_layout/settings/profile/'
+      path: '/settings/profile'
+      fullPath: '/settings/profile'
+      preLoaderRoute: typeof LayoutSettingsProfileIndexImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/warehouse/categories/': {
+      id: '/_layout/warehouse/categories/'
+      path: '/categories'
+      fullPath: '/warehouse/categories'
+      preLoaderRoute: typeof LayoutWarehouseCategoriesIndexImport
+      parentRoute: typeof LayoutWarehouseImport
+    }
+    '/_layout/warehouse/products/': {
+      id: '/_layout/warehouse/products/'
+      path: '/products'
+      fullPath: '/warehouse/products'
+      preLoaderRoute: typeof LayoutWarehouseProductsIndexImport
+      parentRoute: typeof LayoutWarehouseImport
     }
   }
 }
@@ -117,11 +268,25 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren({
   IndexRoute,
   LayoutRoute: LayoutRoute.addChildren({
-    LayoutDashboardIndexRoute,
-    LayoutMangementIndexRoute,
-    LayoutOrdersIndexRoute,
-    LayoutUsersIndexRoute,
-    LayoutWarehouseIndexRoute,
+    LayoutDashboardRoute: LayoutDashboardRoute.addChildren({
+      LayoutDashboardIndexRoute,
+      LayoutDashboardAnalyticsIndexRoute,
+      LayoutDashboardOverviewIndexRoute,
+      LayoutDashboardReportsIndexRoute,
+    }),
+    LayoutOrdersRoute: LayoutOrdersRoute.addChildren({
+      LayoutOrdersIndexRoute,
+    }),
+    LayoutWarehouseRoute: LayoutWarehouseRoute.addChildren({
+      LayoutWarehouseIndexRoute,
+      LayoutWarehouseCategoriesIndexRoute,
+      LayoutWarehouseProductsIndexRoute,
+    }),
+    LayoutSettingsLogoutRoute,
+    LayoutCustomersIndexRoute,
+    LayoutSettingsIndexRoute,
+    LayoutSettingsManagementIndexRoute,
+    LayoutSettingsProfileIndexRoute,
   }),
 })
 
@@ -143,32 +308,93 @@ export const routeTree = rootRoute.addChildren({
     "/_layout": {
       "filePath": "_layout.tsx",
       "children": [
-        "/_layout/dashboard/",
-        "/_layout/mangement/",
-        "/_layout/orders/",
-        "/_layout/users/",
-        "/_layout/warehouse/"
+        "/_layout/dashboard",
+        "/_layout/orders",
+        "/_layout/warehouse",
+        "/_layout/settings/logout",
+        "/_layout/customers/",
+        "/_layout/settings/",
+        "/_layout/settings/management/",
+        "/_layout/settings/profile/"
       ]
+    },
+    "/_layout/dashboard": {
+      "filePath": "_layout/dashboard.tsx",
+      "parent": "/_layout",
+      "children": [
+        "/_layout/dashboard/",
+        "/_layout/dashboard/analytics/",
+        "/_layout/dashboard/overview/",
+        "/_layout/dashboard/reports/"
+      ]
+    },
+    "/_layout/orders": {
+      "filePath": "_layout/orders.tsx",
+      "parent": "/_layout",
+      "children": [
+        "/_layout/orders/"
+      ]
+    },
+    "/_layout/warehouse": {
+      "filePath": "_layout/warehouse.tsx",
+      "parent": "/_layout",
+      "children": [
+        "/_layout/warehouse/",
+        "/_layout/warehouse/categories/",
+        "/_layout/warehouse/products/"
+      ]
+    },
+    "/_layout/settings/logout": {
+      "filePath": "_layout/settings/logout.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/customers/": {
+      "filePath": "_layout/customers/index.tsx",
+      "parent": "/_layout"
     },
     "/_layout/dashboard/": {
       "filePath": "_layout/dashboard/index.tsx",
-      "parent": "/_layout"
-    },
-    "/_layout/mangement/": {
-      "filePath": "_layout/mangement/index.tsx",
-      "parent": "/_layout"
+      "parent": "/_layout/dashboard"
     },
     "/_layout/orders/": {
       "filePath": "_layout/orders/index.tsx",
-      "parent": "/_layout"
+      "parent": "/_layout/orders"
     },
-    "/_layout/users/": {
-      "filePath": "_layout/users/index.tsx",
+    "/_layout/settings/": {
+      "filePath": "_layout/settings/index.tsx",
       "parent": "/_layout"
     },
     "/_layout/warehouse/": {
       "filePath": "_layout/warehouse/index.tsx",
+      "parent": "/_layout/warehouse"
+    },
+    "/_layout/dashboard/analytics/": {
+      "filePath": "_layout/dashboard/analytics/index.tsx",
+      "parent": "/_layout/dashboard"
+    },
+    "/_layout/dashboard/overview/": {
+      "filePath": "_layout/dashboard/overview/index.tsx",
+      "parent": "/_layout/dashboard"
+    },
+    "/_layout/dashboard/reports/": {
+      "filePath": "_layout/dashboard/reports/index.tsx",
+      "parent": "/_layout/dashboard"
+    },
+    "/_layout/settings/management/": {
+      "filePath": "_layout/settings/management/index.tsx",
       "parent": "/_layout"
+    },
+    "/_layout/settings/profile/": {
+      "filePath": "_layout/settings/profile/index.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/warehouse/categories/": {
+      "filePath": "_layout/warehouse/categories/index.tsx",
+      "parent": "/_layout/warehouse"
+    },
+    "/_layout/warehouse/products/": {
+      "filePath": "_layout/warehouse/products/index.tsx",
+      "parent": "/_layout/warehouse"
     }
   }
 }

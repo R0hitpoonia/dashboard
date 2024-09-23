@@ -1,5 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_layout/warehouse/")({
-  component: () => <div>Hello /_layout/warehouse/!</div>,
+  loader: () => {
+    throw redirect({
+      to: "/warehouse/products",
+    });
+  },
+  component: () => <div>Hello, Please go to /warehouse/products !</div>,
 });
