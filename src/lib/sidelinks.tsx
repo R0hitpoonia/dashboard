@@ -10,7 +10,7 @@ import {
   User,
   Bolt,
   SquareChartGantt,
-  Unplug
+  Unplug,
 } from "lucide-react";
 
 export interface NavLink {
@@ -59,7 +59,7 @@ export const sidelinks: SideLink[] = [
       {
         title: "Products",
         label: "",
-        href: "/warehouse/products/all",
+        href: "/warehouse/products",
         icon: <PackageOpen size={18} />,
       },
       {
@@ -74,13 +74,13 @@ export const sidelinks: SideLink[] = [
     title: "Orders",
     label: "",
     href: "/orders",
-    icon: <ShoppingBag size={18} />
+    icon: <ShoppingBag size={18} />,
   },
   {
     title: "customers",
     label: "",
     href: "/customers",
-    icon: <User size={18} />
+    icon: <User size={18} />,
   },
   {
     title: "Setting",
@@ -92,20 +92,20 @@ export const sidelinks: SideLink[] = [
         title: "Profile",
         label: "",
         href: "/setting/profile",
-        icon: <User size={18} />
+        icon: <User size={18} />,
       },
       {
         title: "Management",
         label: "",
         href: "/setting/management",
-        icon: <SquareChartGantt size={18} />
+        icon: <SquareChartGantt size={18} />,
       },
       {
         title: "Logout",
         label: "",
         href: "/setting/logout",
-        icon: <Unplug size={18} />
-      }
-    ]
+        icon: <Unplug size={18} />,
+      },
+    ],
   },
 ];

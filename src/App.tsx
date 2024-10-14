@@ -5,6 +5,7 @@ import {
   ThemeProvider,
   useTheme,
 } from "./components/custom/theme-provider.tsx";
+import { Toaster } from "./components/ui/toaster.tsx";
 
 // Set up a Router instance
 const router = createRouter({
@@ -36,6 +37,7 @@ function App() {
       <AuthProvider> */}
       <ThemeProvider>
         <InnerApp />
+        <Toaster />
       </ThemeProvider>
       {/* </AuthProvider>
     </ReduxProvider> */}

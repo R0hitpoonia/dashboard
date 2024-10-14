@@ -44,12 +44,115 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export const Route = createFileRoute("/_layout/orders/")({
   component: Order,
 });
 
 function Order() {
+  const data = {
+    week: 1349,
+    month: 1234,
+    totalOrders: 120,
+    pageLimit: 10,
+    currentPage: 1,
+    orders: [
+      {
+        id: "Oe31b70H",
+        date: "November 23, 2023",
+        customer: "Liam Johnson",
+        email: "liam@acme.com",
+        phone: "+1 234 567 890",
+        lastUpdated: "November 23, 2023",
+        orderDetails: [
+          {
+            product: "Glimmer Lamps",
+            quantity: 2,
+            price: 250.0,
+          },
+          {
+            product: "Aqua Filters",
+            quantity: 1,
+            price: 49.0,
+          },
+        ],
+        subtotal: 299.0,
+        shipping: 5.0,
+        tax: 25.0,
+        total: 329.0,
+        paymentMethod: "Visa",
+        paymentCard: "**** **** **** 4532",
+        shippingAddress: {
+          name: "Liam Johnson",
+          address: "1234 Main St.",
+          city: "Anytown",
+          state: "CA",
+          zip: "12345",
+        },
+      },
+      {
+        id: "Oe31b70I",
+        date: "November 24, 2023",
+        customer: "Olivia Smith",
+        email: "olivia@acme.com",
+        phone: "+1 234 567 891",
+        lastUpdated: "November 23, 2023",
+        orderDetails: [
+          {
+            product: "Glimmer Lamps",
+            quantity: 1,
+            price: 250.0,
+          },
+          {
+            product: "Aqua Filters",
+            quantity: 2,
+            price: 98.0,
+          },
+        ],
+        subtotal: 348.0,
+        shipping: 5.0,
+        tax: 25.0,
+        total: 378.0,
+        paymentMethod: "Visa",
+        paymentCard: "**** **** **** 4533",
+        shippingAddress: {
+          name: "Olivia Smith",
+          address: "1235 Main St.",
+          city: "Anytown",
+          state: "CA",
+          zip: "12345",
+        },
+      },
+    ],
+  };
+
+  const [orders, setOrders] = useState([]);
+  const [week, setWeek] = useState(0);
+  const [month, setMonth] = useState(0);
+  const [selectedOrder, setSelectedOrder] = useState(data.orders[0]);
+  const [selectedTab, setSelectedTab] = useState("week");
+  const { toast } = useToast();
+  useEffect(() => {
+    // Fetch orders from API
+    fetchOrders().then((data) => setOrders(data));
+  }, []);
+
+  const fetchOrders = async () => {
+    // Replace with your API endpoint
+    const response = await fetch("https://example.com/api/orders");
+    const data = await response.json();
+    return data;
+  };
+
+  const handleTabChange = (tab) => {
+    setSelectedTab(tab);
+  };
+
+  const handleOrderSelect = (order) => {
+    setSelectedOrder(order);
+  };
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
       <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
@@ -69,12 +172,12 @@ function Order() {
           <Card x-chunk="dashboard-05-chunk-1">
             <CardHeader className="pb-2">
               <CardDescription>This Week</CardDescription>
-              <CardTitle className="text-4xl">$1,329</CardTitle>
+              <CardTitle className="text-4xl">${week}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-xs text-muted-foreground">
+              {/* <div className="text-xs text-muted-foreground">
                 +25% from last week
-              </div>
+              </div> */}
             </CardContent>
             <CardFooter>
               <Progress value={25} aria-label="25% increase" />
@@ -83,18 +186,20 @@ function Order() {
           <Card x-chunk="dashboard-05-chunk-2">
             <CardHeader className="pb-2">
               <CardDescription>This Month</CardDescription>
-              <CardTitle className="text-4xl">$5,329</CardTitle>
+              <CardTitle className="text-4xl">${month}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-xs text-muted-foreground">
+              {/* <div className="text-xs text-muted-foreground">
                 +10% from last month
-              </div>
+              </div> */}
             </CardContent>
             <CardFooter>
               <Progress value={12} aria-label="12% increase" />
             </CardFooter>
           </Card>
         </div>
+        {/*create table for orders Table on 13/10/24 */}
+
         <Tabs defaultValue="week">
           <div className="flex items-center">
             <TabsList>
@@ -103,27 +208,6 @@ function Order() {
               <TabsTrigger value="year">Year</TabsTrigger>
             </TabsList>
             <div className="ml-auto flex items-center gap-2">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-7 gap-1 text-sm"
-                  >
-                    <ListFilter className="h-3.5 w-3.5" />
-                    <span className="sr-only sm:not-sr-only">Filter</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuCheckboxItem checked>
-                    Fulfilled
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem>Declined</DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem>Refunded</DropdownMenuCheckboxItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
               <Button size="sm" variant="outline" className="h-7 gap-1 text-sm">
                 <File className="h-3.5 w-3.5" />
                 <span className="sr-only sm:not-sr-only">Export</span>
@@ -133,7 +217,34 @@ function Order() {
           <TabsContent value="week">
             <Card x-chunk="dashboard-05-chunk-3">
               <CardHeader className="px-7">
-                <CardTitle>Orders</CardTitle>
+                <CardTitle className="">
+                  <span>Orders</span>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 gap-1 text-sm"
+                      >
+                        <ListFilter className="h-3.5 w-3.5" />
+                        <span className="sr-only sm:not-sr-only">Filter</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>Filter by</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuCheckboxItem checked>
+                        Fulfilled
+                      </DropdownMenuCheckboxItem>
+                      <DropdownMenuCheckboxItem>
+                        Declined
+                      </DropdownMenuCheckboxItem>
+                      <DropdownMenuCheckboxItem>
+                        Refunded
+                      </DropdownMenuCheckboxItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </CardTitle>
                 <CardDescription>
                   Recent orders from your store.
                 </CardDescription>
@@ -196,126 +307,6 @@ function Order() {
                       </TableCell>
                       <TableCell className="text-right">$150.00</TableCell>
                     </TableRow>
-                    <TableRow>
-                      <TableCell>
-                        <div className="font-medium">Liam Johnson</div>
-                        <div className="hidden text-sm text-muted-foreground md:inline">
-                          liam@example.com
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell">
-                        Sale
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell">
-                        <Badge className="text-xs" variant="secondary">
-                          Fulfilled
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell">
-                        2023-06-23
-                      </TableCell>
-                      <TableCell className="text-right">$250.00</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>
-                        <div className="font-medium">Noah Williams</div>
-                        <div className="hidden text-sm text-muted-foreground md:inline">
-                          noah@example.com
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell">
-                        Subscription
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell">
-                        <Badge className="text-xs" variant="secondary">
-                          Fulfilled
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell">
-                        2023-06-25
-                      </TableCell>
-                      <TableCell className="text-right">$350.00</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>
-                        <div className="font-medium">Emma Brown</div>
-                        <div className="hidden text-sm text-muted-foreground md:inline">
-                          emma@example.com
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell">
-                        Sale
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell">
-                        <Badge className="text-xs" variant="secondary">
-                          Fulfilled
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell">
-                        2023-06-26
-                      </TableCell>
-                      <TableCell className="text-right">$450.00</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>
-                        <div className="font-medium">Liam Johnson</div>
-                        <div className="hidden text-sm text-muted-foreground md:inline">
-                          liam@example.com
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell">
-                        Sale
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell">
-                        <Badge className="text-xs" variant="secondary">
-                          Fulfilled
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell">
-                        2023-06-23
-                      </TableCell>
-                      <TableCell className="text-right">$250.00</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>
-                        <div className="font-medium">Olivia Smith</div>
-                        <div className="hidden text-sm text-muted-foreground md:inline">
-                          olivia@example.com
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell">
-                        Refund
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell">
-                        <Badge className="text-xs" variant="outline">
-                          Declined
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell">
-                        2023-06-24
-                      </TableCell>
-                      <TableCell className="text-right">$150.00</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>
-                        <div className="font-medium">Emma Brown</div>
-                        <div className="hidden text-sm text-muted-foreground md:inline">
-                          emma@example.com
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell">
-                        Sale
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell">
-                        <Badge className="text-xs" variant="secondary">
-                          Fulfilled
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell">
-                        2023-06-26
-                      </TableCell>
-                      <TableCell className="text-right">$450.00</TableCell>
-                    </TableRow>
                   </TableBody>
                 </Table>
               </CardContent>
@@ -328,25 +319,43 @@ function Order() {
           <CardHeader className="flex flex-row items-start bg-muted/50">
             <div className="grid gap-0.5">
               <CardTitle className="group flex items-center gap-2 text-lg">
-                Order Oe31b70H
+                Order: {selectedOrder.id}
                 <Button
                   size="icon"
                   variant="outline"
                   className="h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
+                  onClick={() => {
+                    navigator.clipboard.writeText(selectedOrder.id);
+                    toast({
+                      title: "Copied To Clipboard",
+                      description: "Copied:  " + selectedOrder.id,
+                      duration: 1000,
+                    });
+                  }}
                 >
                   <Copy className="h-3 w-3" />
                   <span className="sr-only">Copy Order ID</span>
                 </Button>
               </CardTitle>
-              <CardDescription>Date: November 23, 2023</CardDescription>
+              <CardDescription>Date: {selectedOrder.date}</CardDescription>
             </div>
             <div className="ml-auto flex items-center gap-1">
-              <Button size="sm" variant="outline" className="h-8 gap-1">
-                <Truck className="h-3.5 w-3.5" />
-                <span className="lg:sr-only xl:not-sr-only xl:whitespace-nowrap">
-                  Track Order
-                </span>
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button size="sm" variant="outline" className="h-8 gap-1">
+                    <Truck className="h-3.5 w-3.5" />
+                    <span className="lg:sr-only xl:not-sr-only xl:whitespace-nowrap">
+                      Change Status
+                    </span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem>Edit</DropdownMenuItem>
+                  <DropdownMenuItem>Export</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>Trash</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button size="icon" variant="outline" className="h-8 w-8">
@@ -384,38 +393,28 @@ function Order() {
               <ul className="grid gap-3">
                 <li className="flex items-center justify-between">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span>$299.00</span>
+                  <span>${selectedOrder.subtotal}</span>
                 </li>
                 <li className="flex items-center justify-between">
                   <span className="text-muted-foreground">Shipping</span>
-                  <span>$5.00</span>
+                  <span>${selectedOrder.shipping}</span>
                 </li>
                 <li className="flex items-center justify-between">
                   <span className="text-muted-foreground">Tax</span>
-                  <span>$25.00</span>
+                  <span>${selectedOrder.tax}</span>
                 </li>
                 <li className="flex items-center justify-between font-semibold">
                   <span className="text-muted-foreground">Total</span>
-                  <span>$329.00</span>
+                  <span>${selectedOrder.total}</span>
                 </li>
               </ul>
             </div>
             <Separator className="my-4" />
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-3">
-                <div className="font-semibold">Shipping Information</div>
-                <address className="grid gap-0.5 not-italic text-muted-foreground">
-                  <span>Liam Johnson</span>
-                  <span>1234 Main St.</span>
-                  <span>Anytown, CA 12345</span>
-                </address>
-              </div>
-              <div className="grid auto-rows-max gap-3">
-                <div className="font-semibold">Billing Information</div>
-                <div className="text-muted-foreground">
-                  Same as shipping address
-                </div>
-              </div>
+            <div className="grid grid-cols-1">
+              <div className="font-semibold">Shipping Information</div>
+              <address className="grid gap-0.5 not-italic text-muted-foreground">
+                {JSON.stringify(selectedOrder.shippingAddress)}
+              </address>
             </div>
             <Separator className="my-4" />
             <div className="grid gap-3">
@@ -423,23 +422,27 @@ function Order() {
               <dl className="grid gap-3">
                 <div className="flex items-center justify-between">
                   <dt className="text-muted-foreground">Customer</dt>
-                  <dd>Liam Johnson</dd>
+                  <dd>{selectedOrder.customer}</dd>
                 </div>
                 <div className="flex items-center justify-between">
                   <dt className="text-muted-foreground">Email</dt>
                   <dd>
-                    <a href="mailto:">liam@acme.com</a>
+                    <a href={"mailto:" + selectedOrder.email}>
+                      {selectedOrder.email}
+                    </a>
                   </dd>
                 </div>
                 <div className="flex items-center justify-between">
                   <dt className="text-muted-foreground">Phone</dt>
                   <dd>
-                    <a href="tel:">+1 234 567 890</a>
+                    <a href={"tel:" + selectedOrder.phone}>
+                      {selectedOrder.phone}
+                    </a>
                   </dd>
                 </div>
               </dl>
             </div>
-            <Separator className="my-4" />
+            {/* <Separator className="my-4" />
             <div className="grid gap-3">
               <div className="font-semibold">Payment Information</div>
               <dl className="grid gap-3">
@@ -451,28 +454,12 @@ function Order() {
                   <dd>**** **** **** 4532</dd>
                 </div>
               </dl>
-            </div>
+            </div> */}
           </CardContent>
           <CardFooter className="flex flex-row items-center border-t bg-muted/50 px-6 py-3">
             <div className="text-xs text-muted-foreground">
-              Updated <time dateTime="2023-11-23">November 23, 2023</time>
+              Updated {selectedOrder.lastUpdated}
             </div>
-            <Pagination className="ml-auto mr-0 w-auto">
-              <PaginationContent>
-                <PaginationItem>
-                  <Button size="icon" variant="outline" className="h-6 w-6">
-                    <ChevronLeft className="h-3.5 w-3.5" />
-                    <span className="sr-only">Previous Order</span>
-                  </Button>
-                </PaginationItem>
-                <PaginationItem>
-                  <Button size="icon" variant="outline" className="h-6 w-6">
-                    <ChevronRight className="h-3.5 w-3.5" />
-                    <span className="sr-only">Next Order</span>
-                  </Button>
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
           </CardFooter>
         </Card>
       </div>

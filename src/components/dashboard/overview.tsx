@@ -69,7 +69,7 @@ export function Overview() {
           axisLine={false}
           tickFormatter={(value) => `$${value}`}
         />
-        <Tooltip />
+        <Tooltip cursor={false} itemStyle={{color:'black'}} wrapperStyle={{color:'black'}} />
         <Legend />
         <Bar
           dataKey='total'
