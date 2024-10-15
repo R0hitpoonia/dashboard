@@ -11,6 +11,7 @@ import {
 import {
   ColumnDef,
   ColumnFiltersState,
+  OnChangeFn,
   PaginationState,
   SortingState,
   VisibilityState,
@@ -31,64 +32,49 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
-import { fetchProductData } from "@/lib/fakedata";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
+import { Order } from "@/lib/schema";
 
-interface Product {
-  name: string;
-  desc: string;
-  categories: string;
-  subCategories: string;
-  status: "draft" | "active" | "deactive";
-  stock: number;
-  price: number;
-  totalSales: number;
-  images: string;
-  createdAt: string;
-  modifiedAt: string;
-}
-
-export const productColumns: ColumnDef<Product>[] = [
+export const orderColumns: ColumnDef<Order>[] = [
   {
-    accessorKey: "images",
-    header: "Image URL",
-    cell: ({ row }) => {
-      const imageUrl = row.getValue("images"); // Single string for the image URL
-      return (
-        <div
-          className="h-10 w-10 overflow-hidden bg-cover bg-center"
-          style={{ backgroundImage: `url(${imageUrl})` }}
-        ></div>
-      );
-    },
-    enableSorting: false,
+    accessorKey: "id",
+    header: "Order ID",
+    cell: ({ row }) => <div>{row.getValue("id")}</div>,
+    enableSorting: false, // Usually, IDs are not sorted
   },
   {
-    accessorKey: "name",
+    accessorKey: "email",
     header: ({ column }) => (
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Product Name
+        Email
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div>{row.getValue("name")}</div>,
+    cell: ({ row }) => <div>{row.getValue("email")}</div>,
     enableSorting: true,
   },
   {
-    accessorKey: "categories",
+    accessorKey: "total",
     header: ({ column }) => (
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Categories
+        Total
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div>{row.getValue("categories")}</div>,
+    cell: ({ row }) => {
+      const total = parseFloat(row.getValue("total"));
+      const formattedTotal = new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+      }).format(total);
+      return <div>{formattedTotal}</div>;
+    },
     enableSorting: true,
   },
   {
@@ -103,76 +89,28 @@ export const productColumns: ColumnDef<Product>[] = [
       </Button>
     ),
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("status")}</div>
+      <div
+        className={`capitalize ${row.getValue("status") === "Cancelled" ? "text-red-600" : ""}`}
+      >
+        {row.getValue("status")}
+      </div>
     ),
     enableSorting: true,
-    // Add filtering logic here if needed
   },
   {
-    accessorKey: "stock",
+    accessorKey: "date",
     header: ({ column }) => (
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Stock
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => <div>{row.getValue("stock")}</div>,
-    enableSorting: true,
-  },
-  {
-    accessorKey: "price",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Price (INR)
+        Date
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
     cell: ({ row }) => {
-      const price = parseFloat(row.getValue("price"));
-      const formattedPrice = new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
-      }).format(price);
-      return <div>{formattedPrice}</div>;
-    },
-    enableSorting: true,
-  },
-  {
-    accessorKey: "totalSales",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Total Sales
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => <div>{row.getValue("totalSales")}</div>,
-    enableSorting: true,
-  },
-  {
-    accessorKey: "modifiedAt",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Last Modified
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => {
-      const modifiedAt = new Date(
-        row.getValue("modifiedAt")
-      ).toLocaleDateString();
-      return <div>{modifiedAt}</div>;
+      const date = new Date(row.getValue("date")).toLocaleDateString();
+      return <div>{date}</div>;
     },
     enableSorting: true,
   },
@@ -180,7 +118,7 @@ export const productColumns: ColumnDef<Product>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const product = row.original;
+      const order = row.original;
 
       return (
         <DropdownMenu>
@@ -193,13 +131,13 @@ export const productColumns: ColumnDef<Product>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(product.name)}
+              onClick={() => navigator.clipboard.writeText(order.id)}
             >
-              Copy product name
+              Copy order ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>View details</DropdownMenuItem>
-            <DropdownMenuItem>Edit product</DropdownMenuItem>
+            <DropdownMenuItem>Edit order</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -207,41 +145,37 @@ export const productColumns: ColumnDef<Product>[] = [
   },
 ];
 
-const ProductTable = () => {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+interface OrderProps {
+  sorting: SortingState;
+  setSorting: OnChangeFn<SortingState> | undefined;
+  pagination: PaginationState;
+  setPagination: OnChangeFn<PaginationState> | undefined;
+  loading: boolean;
+  data: Order[] | null;
+  rowCount: number;
+  setSelectedOrder(order: Order): void;
+}
+
+const OrderTable = ({
+  sorting,
+  setSorting,
+  pagination,
+  setPagination,
+  loading,
+  data,
+  rowCount,
+  setSelectedOrder,
+}: OrderProps) => {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [data, setData] = React.useState<Product[] | null>(null);
-  const [loading, setLoading] = React.useState(false);
-  const [rowCount, setRowCount] = React.useState(100);
-  const [pagination, setPagination] = React.useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
-
-  const datafetching = async (pagenation: PaginationState) => {
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    const response = await fetchProductData(pagenation);
-    setData(response.rows);
-    console.log(data);
-  };
-
-  React.useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      await datafetching(pagination);
-      setLoading(false);
-    };
-    fetchData();
-  }, [pagination]);
 
   const table = useReactTable({
     data: data ? data : [],
-    columns: productColumns,
+    columns: orderColumns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -271,12 +205,12 @@ const ProductTable = () => {
         <Card>
           <CardHeader>
             <Input
-              placeholder="Filter names..."
+              placeholder="Filter email..."
               value={
-                (table.getColumn("name")?.getFilterValue() as string) ?? ""
+                (table.getColumn("email")?.getFilterValue() as string) ?? ""
               }
               onChange={(event) =>
-                table.getColumn("name")?.setFilterValue(event.target.value)
+                table.getColumn("email")?.setFilterValue(event.target.value)
               }
               className="max-w-sm"
             />
@@ -307,6 +241,10 @@ const ProductTable = () => {
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && "selected"}
+                      onClick={() => {
+                        setSelectedOrder(row.original);
+                      }}
+                      className="cursor-pointer"
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>
@@ -321,7 +259,7 @@ const ProductTable = () => {
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={productColumns.length}
+                      colSpan={orderColumns.length}
                       className="h-24 text-center"
                     >
                       No results.
@@ -415,9 +353,6 @@ const ProductTable = () => {
                   </option>
                 ))}
               </select> */}
-              <span>{`sorting: ${JSON.stringify(sorting)}`}</span>
-              <span>{`columnFilters: ${JSON.stringify(columnFilters)}`}</span>
-              <span>{`rowSelection: ${JSON.stringify(rowSelection)}`}</span>
             </div>
           </CardFooter>
         </Card>
@@ -428,4 +363,4 @@ const ProductTable = () => {
   }
 };
 
-export default ProductTable;
+export default OrderTable;
