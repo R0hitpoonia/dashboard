@@ -54,3 +54,22 @@ export function makeProductData(...lens: number[]) {
 
   return makeDataLevel();
 }
+
+const data = makeProductData(1000);
+
+export async function fetchProductData(options: {
+  pageIndex: number;
+  pageSize: number;
+}) {
+  // network latency
+  await new Promise((r) => setTimeout(r, 500));
+
+  return {
+    rows: data.slice(
+      options.pageIndex * options.pageSize,
+      (options.pageIndex + 1) * options.pageSize
+    ),
+    pageCount: Math.ceil(data.length / options.pageSize),
+    rowCount: data.length,
+  };
+}
