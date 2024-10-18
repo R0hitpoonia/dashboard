@@ -4,13 +4,13 @@ import { useDispatch, TypedUseSelectorHook, useSelector } from "react-redux";
 import { authReducer } from "@/redux/slice/authSlice";
 // import sessionStorage from "redux-persist/es/storage/session";
 // import AsyncStorage from "@react-native-async-storage/async-storage";
-import cartSlice from "./slice/cartSlice";
+// import cartSlice from "./slice/cartSlice";
 import { authApi } from "./api/authApi";
-import { userApi } from "./api/userApi";
-import { productApi } from "./api/prductsApi";
-import { cartApi } from "./api/cartApi";
-import { adminApi } from "./api/adminApi";
-import orderSlice from "./slice/orderSlice";
+// import { userApi } from "./api/userApi";
+// import { productApi } from "./api/prductsApi";
+// import { cartApi } from "./api/cartApi";
+// import { adminApi } from "./api/adminApi";
+// import orderSlice from "./slice/orderSlice";
 
 // const authPersistConfig = {
 //   key: "root",
@@ -19,14 +19,14 @@ import orderSlice from "./slice/orderSlice";
 
 const rootReducer = combineReducers({
   [authApi.reducerPath]: authApi.reducer,
-  [userApi.reducerPath]: userApi.reducer,
-  [productApi.reducerPath]: productApi.reducer,
-  [cartApi.reducerPath]: cartApi.reducer,
-  [adminApi.reducerPath]: adminApi.reducer,
+  // [userApi.reducerPath]: userApi.reducer,
+  // [productApi.reducerPath]: productApi.reducer,
+  // [cartApi.reducerPath]: cartApi.reducer,
+  // [adminApi.reducerPath]: adminApi.reducer,
   // Connect the PostApi reducer to the store
-  order: orderSlice,
+  // order: orderSlice,
   auth: authReducer,
-  cart: cartSlice,
+  // cart: cartSlice,
 });
 
 // const persistedReducer = persistReducer(authPersistConfig, rootReducer);
@@ -36,10 +36,10 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }).concat([
       authApi.middleware,
-      userApi.middleware,
-      productApi.middleware,
-      cartApi.middleware,
-      adminApi.middleware,
+      // userApi.middleware,
+      // productApi.middleware,
+      // cartApi.middleware,
+      // adminApi.middleware,
     ]),
 });
 

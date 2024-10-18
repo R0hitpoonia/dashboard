@@ -77,3 +77,20 @@ export interface ShippingAddress {
   state: string;
   zip: string;
 }
+
+export interface NewProductRequestBody {
+  productName: string;
+  qtyavailable: number;
+  price: number;
+  category: string;
+  subCategory?: string;
+  description?: string;
+  variants: Variant[];
+  status: "active" | "deactive" | "draft";
+  images: File[];
+}
+
+export interface Variant {
+  color: string;
+  stock: number;
+}

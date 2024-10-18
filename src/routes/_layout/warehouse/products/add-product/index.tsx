@@ -1,5 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronLeft, PlusCircle, Upload } from "lucide-react";
+import {
+  ChevronLeft,
+  LoaderCircle,
+  PlusCircle,
+  Trash,
+  Trash2,
+  Upload,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,6 +39,9 @@ import { Textarea } from "@/components/ui/textarea";
 // import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useState, useEffect } from "react";
 import { SelectIcon } from "@radix-ui/react-select";
+import { NewProductRequestBody } from "@/lib/schema";
+import { useAddProductMutation } from "@/redux/api/authApi";
+import { toast } from "@/hooks/use-toast";
 
 export const Route = createFileRoute(
   "/_layout/warehouse/products/add-product/"
@@ -40,6 +50,66 @@ export const Route = createFileRoute(
 });
 
 function Addproduct() {
+  const newProduct: NewProductRequestBody = {
+    productName: "",
+    description: "",
+    variants: [],
+    subCategory: "",
+    price: 0,
+    qtyavailable: 0,
+    category: "",
+    status: "active",
+    images: [],
+  };
+  const [categories, setCategories] = useState();
+  const statuses = ["draft", "active", "deactive"];
+  const [product, setProduct] = useState<NewProductRequestBody>(newProduct);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setProduct((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const handleVariantChange = (
+    index: number,
+    field: string,
+    value: number | string
+  ) => {
+    setProduct((prev) => {
+      const newVariant = [...prev.variants];
+      newVariant[index] = { ...newVariant[index], [field]: value };
+      return { ...prev, variants: newVariant };
+    });
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    // const reader = new FileReader();
+    if (files) {
+      // reader.readAsDataURL(files);
+      // reader.onloadend = () => {
+      setProduct((prev) => ({
+        ...prev,
+        images: [...prev.images, ...files],
+        // images: reader.result,
+      }));
+      // };
+    }
+  };
+  const [addNewProduct, { isSuccess, isLoading, isError, data }] =
+    useAddProductMutation();
+
+  const handleSaveProduct = () => {
+    // Here you can implement API call to save the product
+    addNewProduct({ productInfo: product });
+    if (isSuccess) {
+      toast({
+        title: "Product Added Successfully",
+        duration: 1500,
+      });
+    }
+  };
+
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 mb-5">
       <div className="mx-auto grid max-w-[59rem] flex-1 auto-rows-max gap-4">
@@ -62,7 +132,13 @@ function Addproduct() {
                 Discard
               </Button>
             </Link>
-            <Button size="sm">Save Product</Button>
+            <Button size="sm" onClick={handleSaveProduct}>
+              {isLoading ? (
+                <LoaderCircle size="sm" className="animate-spin" />
+              ) : (
+                "Save Product"
+              )}
+            </Button>
           </div>
         </div>
         <div className="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
@@ -76,19 +152,36 @@ function Addproduct() {
               </CardHeader>
               <CardContent>
                 <div className="grid gap-6">
-                  <div className="grid gap-3">
-                    <Label htmlFor="name">Name</Label>
-                    <Input
-                      id="name"
-                      type="text"
-                      className="w-full"
-                      placeholder="Product Name"
-                    />
+                  <div className="flex flex-row w-full gap-3">
+                    <div className="grid gap-3 w-full">
+                      <Label htmlFor="name">Name</Label>
+                      <Input
+                        id="productName"
+                        type="text"
+                        value={product.productName}
+                        onChange={handleInputChange}
+                        className="w-full"
+                        placeholder="Product Name"
+                      />
+                    </div>
+                    <div className="grid gap-3 w-full">
+                      <Label htmlFor="price">Price</Label>
+                      <Input
+                        id="price"
+                        type="number"
+                        value={product.price}
+                        onChange={handleInputChange}
+                        className="w-full"
+                        placeholder="Product Name"
+                      />
+                    </div>
                   </div>
                   <div className="grid gap-3">
                     <Label htmlFor="description">Description</Label>
                     <Textarea
                       id="description"
+                      value={product.description}
+                      onChange={handleInputChange}
                       placeholder="Write discription for your product..."
                       className="min-h-32"
                     />
@@ -107,74 +200,76 @@ function Addproduct() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-[100px]">SKU</TableHead>
+                      <TableHead>Varient</TableHead>
                       <TableHead>Stock</TableHead>
-                      <TableHead>Price</TableHead>
+                      <TableHead className="w-[100px]"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    <TableRow>
-                      <TableCell className="font-semibold">GGPC-001</TableCell>
-                      <TableCell>
-                        <Label htmlFor="stock-1" className="sr-only">
-                          Stock
-                        </Label>
-                        <Input id="stock-1" type="number" defaultValue={100} />
-                      </TableCell>
-                      <TableCell>
-                        <Label htmlFor="price-1" className="sr-only">
-                          Price
-                        </Label>
-                        <Input
-                          id="price-1"
-                          type="number"
-                          defaultValue="99.99"
-                        />
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="font-semibold">GGPC-002</TableCell>
-                      <TableCell>
-                        <Label htmlFor="stock-2" className="sr-only">
-                          Stock
-                        </Label>
-                        <Input id="stock-2" type="number" defaultValue="143" />
-                      </TableCell>
-                      <TableCell>
-                        <Label htmlFor="price-2" className="sr-only">
-                          Price
-                        </Label>
-                        <Input
-                          id="price-2"
-                          type="number"
-                          defaultValue="99.99"
-                        />
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="font-semibold">GGPC-003</TableCell>
-                      <TableCell>
-                        <Label htmlFor="stock-3" className="sr-only">
-                          Stock
-                        </Label>
-                        <Input id="stock-3" type="number" defaultValue="32" />
-                      </TableCell>
-                      <TableCell>
-                        <Label htmlFor="price-3" className="sr-only">
-                          Stock
-                        </Label>
-                        <Input
-                          id="price-3"
-                          type="number"
-                          defaultValue="99.99"
-                        />
-                      </TableCell>
-                    </TableRow>
+                    {product.variants.map((Variant, index) => (
+                      <TableRow key={index}>
+                        <TableCell>
+                          <Input
+                            id={`stock-${index}-color`}
+                            value={Variant.color}
+                            onChange={(e) =>
+                              handleVariantChange(
+                                index,
+                                "color",
+                                e.target.value
+                              )
+                            }
+                            placeholder="Enter Color"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Input
+                            id={`stock-${index}-quantity`}
+                            value={Variant.stock}
+                            onChange={(e) =>
+                              handleVariantChange(
+                                index,
+                                "stock",
+                                parseInt(e.target.value, 10)
+                              )
+                            }
+                            placeholder="Enter quantity"
+                          />
+                        </TableCell>
+                        <TableCell className="w-[100px]">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="gap-3 p-1"
+                            onClick={() =>
+                              setProduct((prev) => ({
+                                ...prev,
+                                variants: product.variants.filter(
+                                  (_, i) => i !== index
+                                ),
+                              }))
+                            }
+                          >
+                            <Trash2 className="h-3.5 w-4.5" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               </CardContent>
               <CardFooter className="justify-center border-t p-4">
-                <Button size="sm" variant="ghost" className="gap-1">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="gap-1"
+                  onClick={() =>
+                    setProduct((prev) => ({
+                      ...prev,
+                      variants: [...prev.variants, { color: "", stock: 0 }],
+                    }))
+                  }
+                >
                   <PlusCircle className="h-3.5 w-3.5" />
                   Add Variant
                 </Button>
@@ -250,33 +345,33 @@ function Addproduct() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="card-content">
+                {/* first photo */}
                 <div className="grid gap-2">
-                  <img
-                    alt="Product image"
-                    className="aspect-square w-full rounded-md object-cover"
-                    height="300"
-                    src="/placeholder.svg"
-                    width="300"
-                  />
+                  {product.images.length > 0 && (
+                    <img
+                      alt="Product image"
+                      className="aspect-square w-full rounded-md object-cover"
+                      height="300"
+                      width="300"
+                      src={URL.createObjectURL(product.images[0])}
+                    />
+                  )}
                   <div className="grid grid-cols-3 gap-2">
-                    <button>
-                      <img
-                        alt="Product image"
-                        className="aspect-square w-full rounded-md object-cover"
-                        height="84"
-                        src="/placeholder.svg"
-                        width="84"
-                      />
-                    </button>
-                    <button>
-                      <img
-                        alt="Product image"
-                        className="aspect-square w-full rounded-md object-cover"
-                        height="84"
-                        src="/placeholder.svg"
-                        width="84"
-                      />
-                    </button>
+                    {/* other photos */}
+
+                    {product.images.map(
+                      (image, index) =>
+                        index > 0 && (
+                          <img
+                            key={index}
+                            alt="Product image"
+                            className="aspect-square w-full rounded-md object-cover"
+                            height="84"
+                            src={URL.createObjectURL(image)}
+                            width="84"
+                          />
+                        )
+                    )}
                     {/* <button className="flex aspect-square w-full items-center justify-center rounded-md border border-dashed"> */}
                     <Button
                       size="sm"
@@ -287,26 +382,14 @@ function Addproduct() {
                     >
                       <Upload className="h-4 w-4 text-muted-foreground" />
                       <span className="sr-only">Upload</span>
+
                       <input
                         id="image-upload"
                         type="file"
                         accept="image/*"
                         style={{ display: "none" }}
-                        onChange={(e) => {
-                          const file = e.target.files ? [0] : [];
-                          const reader = new FileReader();
-                          reader.onload = () => {
-                            const img = document.createElement("img");
-                            // img?.src = reader.result:"";
-                            img.alt = "Product image";
-                            img.className =
-                              "aspect-square w-full rounded-md object-cover";
-                            img.height = 300;
-                            img.width = 300;
-                            // document.querySelector('.overflow-hidden > .card-content > div > img').replaceWith(img);
-                          };
-                          reader.readAsDataURL(file);
-                        }}
+                        multiple
+                        onChange={handleImageUpload}
                       />
                     </Button>
 
@@ -317,27 +400,25 @@ function Addproduct() {
                 </div>
               </CardContent>
             </Card>
-            <Card x-chunk="dashboard-07-chunk-5">
-              <CardHeader>
-                <CardTitle>Archive Product</CardTitle>
-                <CardDescription>
-                  Lipsum dolor sit amet, consectetur adipiscing elit.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div></div>
-                <Button size="sm" variant="secondary">
-                  Archive Product
-                </Button>
-              </CardContent>
-            </Card>
           </div>
         </div>
         <div className="flex items-center justify-center gap-2 md:hidden">
-          <Button variant="outline" size="sm">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setProduct(newProduct);
+            }}
+          >
             Discard
           </Button>
-          <Button size="sm">Save Product</Button>
+          <Button size="sm" onClick={handleSaveProduct}>
+            {isLoading ? (
+              <LoaderCircle size="sm" className="animate-spin" />
+            ) : (
+              "Save Product"
+            )}
+          </Button>
         </div>
       </div>
     </main>

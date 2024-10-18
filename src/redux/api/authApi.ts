@@ -5,12 +5,13 @@ import {
   loginUserRequest,
   authResponse,
   registerUserRequest,
+  NewProductRequestBody,
 } from "@/lib/schema";
 
 export const authApi = createApi({
   reducerPath: "authapi",
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.API_URL,
+    baseUrl: import.meta.env.VITE_API_URL,
     credentials: "include",
   }),
   endpoints: (builder) => ({
@@ -32,7 +33,7 @@ export const authApi = createApi({
               password: "",
               profilePhoto: user.profilePhoto,
               role: user.role,
-            }),
+            })
           );
         } catch (error) {
           console.log(error);
@@ -50,7 +51,7 @@ export const authApi = createApi({
           await dispatch(authApi.endpoints.getUser.initiate(null));
         } catch (error: any) {
           throw new Error(
-            error.message ? error.message : "Error occured  while logging in",
+            error.message ? error.message : "Error occured  while logging in"
           );
         }
       },
@@ -75,6 +76,60 @@ export const authApi = createApi({
         };
       },
     }),
+    addProduct: builder.mutation<any, { productInfo: NewProductRequestBody }>({
+      query: ({ productInfo }) => {
+        const formData = new FormData();
+
+        formData.append("productName", productInfo.productName);
+        formData.append(
+          "description",
+          productInfo.description ? productInfo.description : ""
+        );
+        formData.append(
+          "category",
+          productInfo.category ? JSON.stringify(productInfo.category) : "cat1"
+        );
+        formData.append("variants", JSON.stringify(productInfo.variants));
+
+        formData.append(
+          "price",
+          productInfo.price ? String(productInfo.price) : "0"
+        );
+        formData.append(
+          "subCategory",
+          productInfo.subCategory ? String(productInfo.subCategory) : "cat"
+        );
+        formData.append(
+          "status",
+          productInfo.status ? String(productInfo.status) : ""
+        );
+        if (productInfo.images !== null) {
+          for (let index = 0; index < productInfo.images.length; index++) {
+            formData.append(
+              "images",
+              productInfo.images[index],
+              productInfo.images[index].name
+            );
+          }
+        }
+        return {
+          url: "/product",
+          method: "POST",
+          transformResponse: (response: string) => {
+            return JSON.parse(response).id;
+          },
+          body: formData,
+        };
+      },
+    }),
+    getCategories: builder.query<any, null>({
+      query: () => {
+        return {
+          url: "/category",
+          method: "GET",
+        };
+      },
+    }),
   }),
 });
 
@@ -84,4 +139,6 @@ export const {
   useLogoutUserMutation,
   useRegisterUserMutation,
   useLazyGetUserQuery,
+  useAddProductMutation,
+  useGetCategoriesQuery,
 } = authApi;

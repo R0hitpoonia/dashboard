@@ -6,6 +6,7 @@ import {
   useTheme,
 } from "./components/custom/theme-provider.tsx";
 import { Toaster } from "./components/ui/toaster.tsx";
+import ReduxProvider from "./redux/redux-povide.tsx";
 
 // Set up a Router instance
 const router = createRouter({
@@ -33,14 +34,14 @@ function InnerApp() {
 function App() {
   return (
     <>
-      {/* <ReduxProvider>
-      <AuthProvider> */}
-      <ThemeProvider>
-        <InnerApp />
-        <Toaster />
-      </ThemeProvider>
-      {/* </AuthProvider>
-    </ReduxProvider> */}
+      <ReduxProvider>
+        {/*<AuthProvider> */}
+        <ThemeProvider>
+          <InnerApp />
+          <Toaster />
+        </ThemeProvider>
+        {/* </AuthProvider>*/}
+      </ReduxProvider>
     </>
   );
 }
