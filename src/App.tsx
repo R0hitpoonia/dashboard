@@ -7,13 +7,14 @@ import {
 } from "./components/custom/theme-provider.tsx";
 import { Toaster } from "./components/ui/toaster.tsx";
 import ReduxProvider from "./redux/redux-povide.tsx";
+import { AuthProvider, useAuth } from "./lib/auth.tsx";
 
 // Set up a Router instance
 const router = createRouter({
   routeTree,
   defaultPreload: "intent",
   context: {
-    //   auth: undefined!, // This will be set after we wrap the app in an AuthProvider
+    auth: undefined!, // This will be set after we wrap the app in an AuthProvider
     theme: undefined!,
   },
 });
@@ -26,21 +27,21 @@ declare module "@tanstack/react-router" {
 }
 
 function InnerApp() {
-  // const auth = useAuth();
+  const auth = useAuth();
   const theme = useTheme();
-  return <RouterProvider router={router} context={{ theme }} />; // context={{ auth }}
+  return <RouterProvider router={router} context={{ theme, auth }} />; // context={{ auth }}
 }
 
 function App() {
   return (
     <>
       <ReduxProvider>
-        {/*<AuthProvider> */}
-        <ThemeProvider>
-          <InnerApp />
-          <Toaster />
-        </ThemeProvider>
-        {/* </AuthProvider>*/}
+        <AuthProvider>
+          <ThemeProvider>
+            <InnerApp />
+            <Toaster />
+          </ThemeProvider>
+        </AuthProvider>
       </ReduxProvider>
     </>
   );

@@ -13,7 +13,7 @@ import OrderTable from "@/components/tables/OrderTable";
 import { PaginationState, SortingState } from "@tanstack/react-table";
 import { fetchOrderData } from "@/lib/fakedata";
 import React from "react";
-import { Order } from "@/lib/schema";
+import { Order, OrderDetail } from "@/lib/schema";
 import { Progress } from "@/components/ui/progress";
 import {
   DropdownMenu,
@@ -25,6 +25,7 @@ import {
 import { Copy, MoreVertical, Truck } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
+import { useGetOrdersWithFilerMutation } from "@/redux/api/authApi";
 
 export const Route = createFileRoute("/_layout/orders/")({
   component: OrderPage,
@@ -41,21 +42,76 @@ function OrderPage() {
     pageSize: 10,
   });
 
-  const datafetching = async (pagenation: PaginationState) => {
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    const response = await fetchOrderData(pagenation);
-    setData(response.rows);
-    console.log(data);
+  const [orderWithFilter, orderWithFilterHelper] =
+    useGetOrdersWithFilerMutation();
+  const datafetching = async () => {
+    try {
+      // Fetch the order data with the current pagination and sorting
+      await orderWithFilter({ pagination, sort: sorting });
+      // Log the raw response data for debugging
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch orders. Please try again.",
+        duration: 3000,
+      });
+    }
   };
-
   React.useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      await datafetching(pagination);
+      await datafetching();
       setLoading(false);
     };
     fetchData();
-  }, [pagination]);
+  }, [pagination, sorting]);
+
+  React.useEffect(() => {
+    if (orderWithFilterHelper.isSuccess && orderWithFilterHelper.data) {
+      // console.log("Raw response data:", orderWithFilterHelper.data.data);
+      const transformedOrders = orderWithFilterHelper.data.data.map(
+        (order: any) => {
+          const transformedOrder: Order = {
+            id: order.orderId,
+            date: new Date(order.createdAt).toISOString(),
+            customer: order.userId.name,
+            email: order.userId.email,
+            phone: "", // Add phone if available in the response
+            status: order.status === "active" ? "Order Placed" : "Cancelled",
+            lastUpdated: new Date(order.createdAt).toISOString(),
+            orderDetails: Object.values(order.cart.products).map(
+              (item: any) => ({
+                product: String(item.product.productName),
+                price: Number(item.product.price),
+                quantity: Number(item.quantity),
+              })
+            ),
+            subtotal: order.cart.totalPrice,
+            shipping: order.cart.deliveryCharges,
+            tax: order.cart.gst,
+            total: order.cart.payablePrice,
+            paymentMethod: "Unknown", // Extract if available
+            paymentId: order.paymentId,
+            shippingAddress: {
+              address: order.shippingAddress.street,
+              city: order.shippingAddress.city,
+              state: order.shippingAddress.state,
+              name: order.userId.name,
+              zip: order.shippingAddress.pinCode,
+            },
+          };
+          return transformedOrder;
+        }
+      );
+
+      // Log the transformed orders for debugging
+      // console.log("Transformed orders:", transformedOrders);
+      setRowCount(orderWithFilterHelper.data.totalOrders);
+      // Set the transformed data to state
+      setData(transformedOrders);
+    }
+  }, [orderWithFilterHelper.data]);
 
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">

@@ -5,9 +5,10 @@ import {
   PlusCircle,
   Trash2,
   Upload,
+  X,
 } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
+import { Badge, badgeVariants } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -37,17 +38,23 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 // import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useState, useEffect } from "react";
-import { NewProductRequestBody } from "@/lib/schema";
+import { EditProductRequestBody, NewProductRequestBody } from "@/lib/schema";
 import {
   useAddProductMutation,
+  useEditProductMutation,
   useGetCategoriesQuery,
+  useGetProductByIdQuery,
 } from "@/redux/api/authApi";
 import { toast } from "@/hooks/use-toast";
 
 export const Route = createFileRoute(
-  "/_layout/warehouse/products/add-product/"
+  "/_layout/warehouse/products/add-product/$pid"
 )({
-  component: Addproduct,
+  loader: async ({ params }) => {
+    const { pid } = params;
+    return pid;
+  },
+  component: EditProduct,
 });
 
 interface category {
@@ -55,8 +62,8 @@ interface category {
   subCategory: Array<string>;
 }
 
-function Addproduct() {
-  const newProduct: NewProductRequestBody = {
+function EditProduct() {
+  const editProduct: EditProductRequestBody = {
     productName: "",
     description: "",
     variants: [],
@@ -66,23 +73,67 @@ function Addproduct() {
     category: "",
     status: "active",
     images: [],
+    newImages: [],
   };
+  const productId = Route.useLoaderData();
+  const productFromId = useGetProductByIdQuery(productId);
   const [categories, setCategories] = useState<category[]>([]);
   const statuses = ["draft", "active", "deactive"];
-  const [product, setProduct] = useState<NewProductRequestBody>(newProduct);
-  const [addNewProduct, addNewProductHelper] = useAddProductMutation();
+  const [product, setProduct] = useState<EditProductRequestBody>(editProduct);
+  const [productById, setProductById] =
+    useState<EditProductRequestBody>(editProduct);
   const getCategories = useGetCategoriesQuery(null);
+  const [editProductApi, editProductHelper] = useEditProductMutation();
+
+  useEffect(() => {
+    if (productFromId.isSuccess) {
+      const editProductFromId: EditProductRequestBody = {
+        productName: productFromId.data?.data.productName
+          ? productFromId.data.data.productName
+          : "",
+        description: productFromId.data?.data.description
+          ? productFromId.data.data.description
+          : "",
+        variants: productFromId.data?.data.variants
+          ? productFromId.data?.data.variants.map((variant) => ({
+              color: variant.color || "", // Assuming color is part of the variant
+              stock: variant.stock || 0, // Assuming stock is part of the variant
+            }))
+          : [],
+        subCategory: productFromId.data?.data.subCategory
+          ? productFromId.data.data.subCategory
+          : "",
+        price: productFromId.data?.data.price
+          ? productFromId.data.data.price
+          : 0,
+        qtyavailable: productFromId.data?.data.qtyavailable
+          ? productFromId.data.data.qtyavailable
+          : 0,
+        category: productFromId.data?.data.category
+          ? productFromId.data.data.category
+          : "",
+        status: productFromId.data?.data.status
+          ? productFromId.data.data.status
+          : "active",
+        images: productFromId.data?.data.images
+          ? productFromId.data.data.images
+          : [],
+        newImages: [],
+      };
+      setProduct(editProductFromId);
+      setProductById(editProductFromId);
+    }
+  }, [productFromId.data]);
 
   const handleSaveProduct = () => {
     // Here you can implement API call to save the product
-    addNewProduct({ productInfo: product });
     console.log(product);
+    editProductApi({ productId, product });
   };
 
   useEffect(() => {
     if (getCategories.isSuccess) {
       setCategories(getCategories.data.categories);
-      console.log(categories);
     }
   }, [getCategories.data]);
 
@@ -111,27 +162,33 @@ function Addproduct() {
       // reader.onloadend = () => {
       setProduct((prev) => ({
         ...prev,
-        images: [...prev.images, ...files],
+        newImages: [...prev.newImages, ...files],
         // images: reader.result,
       }));
       // };
     }
   };
 
-  if (addNewProductHelper.isSuccess) {
-    toast({
-      title: "Product Added Successfully",
-      duration: 2500,
-    });
-    setProduct(newProduct);
-  }
-  if (addNewProductHelper.isError) {
-    toast({
-      title: "Error Adding Product",
-      description: JSON.stringify(addNewProductHelper.error.data.message),
-      duration: 2500,
-    });
-  }
+  useEffect(() => {
+    if (editProductHelper.isSuccess) {
+      toast({
+        title: "Product Added Successfully",
+        duration: 2500,
+      });
+      // setProduct(newProduct);
+    }
+    if (editProductHelper.isError) {
+      toast({
+        title: "Error Adding Product",
+        description: JSON.stringify(editProductHelper.error),
+        duration: 2500,
+      });
+    }
+  }, [
+    editProductHelper.isSuccess,
+    editProductHelper.isError,
+    editProductHelper.data,
+  ]);
 
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 mb-5">
@@ -156,7 +213,7 @@ function Addproduct() {
               </Button>
             </Link>
             <Button size="sm" onClick={handleSaveProduct}>
-              {addNewProductHelper.isLoading ? (
+              {editProductHelper.isLoading ? (
                 <LoaderCircle size="sm" className="animate-spin" />
               ) : (
                 "Save Product"
@@ -307,6 +364,7 @@ function Addproduct() {
                   <div className="grid gap-3">
                     <Label htmlFor="category">Category</Label>
                     <Select
+                      defaultValue={product.category}
                       onValueChange={(value) => {
                         setProduct((pre) => ({ ...pre, category: value }));
                       }}
@@ -326,6 +384,7 @@ function Addproduct() {
                   <div className="grid gap-3">
                     <Label htmlFor="subcategory">Subcategory (optional)</Label>
                     <Select
+                      defaultValue={product.subcategory}
                       onValueChange={(value) => {
                         setProduct((pre) => ({ ...pre, subCategory: value }));
                       }}
@@ -397,20 +456,71 @@ function Addproduct() {
               </CardHeader>
               <CardContent className="card-content">
                 {/* first photo */}
+
+                <div className="grid grid-cols-3 gap-2">
+                  {/* other photos */}
+
+                  {product.images.map((image, index) => (
+                    <div key={index} className="group relative">
+                      <div className="relative w-21 h-21">
+                        {" "}
+                        {/* w-21 and h-21 are 84px (21 * 4px = 84px) */}
+                        <img
+                          alt="Product image"
+                          className="aspect-square w-full rounded-md object-cover"
+                          height="84"
+                          src={image}
+                          width="84"
+                        />
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="absolute top-1 right-1 h-6 w-6 p-0"
+                          onClick={() =>
+                            setProduct((prev) => ({
+                              ...prev,
+                              images: product.images.filter(
+                                (_, i) => i !== index
+                              ),
+                            }))
+                          }
+                        >
+                          <X className="h-4 w-4" />
+                          <span className="sr-only">Close</span>
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  {/* <button className="flex aspect-square w-full items-center justify-center rounded-md border border-dashed"> */}
+                  {/* <Upload className="h-4 w-4 text-muted-foreground" />
+                        <span className="sr-only">Upload</span>
+                      </button> */}
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="overflow-hidden" x-chunk="dashboard-07-chunk-4">
+              <CardHeader>
+                <CardTitle>Product Images</CardTitle>
+                <CardDescription>
+                  Lipsum dolor sit amet, consectetur adipiscing elit
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="card-content">
+                {/* first photo */}
                 <div className="grid gap-2">
-                  {product.images.length > 0 && (
+                  {product.newImages.length > 0 && (
                     <img
                       alt="Product image"
                       className="aspect-square w-full rounded-md object-cover"
                       height="300"
                       width="300"
-                      src={URL.createObjectURL(product.images[0])}
+                      src={URL.createObjectURL(product.newImages[0])}
                     />
                   )}
                   <div className="grid grid-cols-3 gap-2">
                     {/* other photos */}
 
-                    {product.images.map(
+                    {product.newImages.map(
                       (image, index) =>
                         index > 0 && (
                           <img
@@ -458,13 +568,13 @@ function Addproduct() {
             variant="outline"
             size="sm"
             onClick={() => {
-              setProduct(newProduct);
+              setProduct(productById);
             }}
           >
             Discard
           </Button>
           <Button size="sm" onClick={handleSaveProduct}>
-            {addNewProductHelper.isLoading ? (
+            {editProductHelper.isLoading ? (
               <LoaderCircle size="sm" className="animate-spin" />
             ) : (
               "Save Product"

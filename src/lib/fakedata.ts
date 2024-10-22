@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { Order, Product } from "./schema";
+import { category, Order, Product, User } from "./schema";
 
 const range = (len: number) => {
   const arr: number[] = [];
@@ -133,4 +133,96 @@ export async function fetchProductData(options: {
     pageCount: Math.ceil(data.length / options.pageSize),
     rowCount: data.length,
   };
+}
+
+const newCategory = (): category => {
+  return {
+    name: faker.commerce.department(),
+    subCategory: faker.helpers
+      .shuffle<string>(["Electronics", "Fashion", "Home", "Beauty", "Toys"])
+      .slice(0, faker.number.int({ min: 0, max: 5 })),
+  };
+};
+
+export function makeCategoryData(...lens: number[]) {
+  const makeDataLevel = (depth = 0): category[] => {
+    const len = lens[depth]!;
+    return range(len).map((_d): category => {
+      return {
+        ...newCategory(),
+      };
+    });
+  };
+
+  return makeDataLevel();
+}
+
+const categoryData = makeCategoryData(1000);
+
+export async function fetchCategoryData(options: {
+  pageIndex: number;
+  pageSize: number;
+}) {
+  // network latency
+  await new Promise((r) => setTimeout(r, 500));
+
+  return {
+    rows: categoryData.slice(
+      options.pageIndex * options.pageSize,
+      (options.pageIndex + 1) * options.pageSize
+    ),
+    pageCount: Math.ceil(categoryData.length / options.pageSize),
+    rowCount: categoryData.length,
+  };
+}
+
+export async function fetchUserData(options: {
+  pageIndex: number;
+  pageSize: number;
+}) {
+  // network latency
+  await new Promise((r) => setTimeout(r, 500));
+
+  const data = makeUserData(1000);
+
+  return {
+    rows: data.slice(
+      options.pageIndex * options.pageSize,
+      (options.pageIndex + 1) * options.pageSize
+    ),
+    pageCount: Math.ceil(data.length / options.pageSize),
+    rowCount: data.length,
+  };
+}
+
+const newUser = (): User => {
+  return {
+    name: faker.name.fullName(),
+    email: faker.internet.email(),
+    profilePhoto: faker.image.avatar(),
+    password: faker.internet.password(),
+    address: range(faker.number.int({ min: 1, max: 5 })).map(() => ({
+      name: faker.person.fullName(),
+      address: faker.address.streetAddress(),
+      street: faker.address.streetAddress(),
+      city: faker.address.city(),
+      state: faker.address.state(),
+      zip: faker.address.zipCode(),
+    })),
+    spent: faker.number.int({ min: 1000, max: 10000 }),
+    role: "user",
+  };
+};
+
+export function makeUserData(...lens: number[]) {
+  const makeDataLevel = (depth = 0): User[] => {
+    const len = lens[depth]!;
+    return range(len).map((_d): User => {
+      return {
+        ...newUser(),
+      };
+    });
+  };
+
+  return makeDataLevel();
 }

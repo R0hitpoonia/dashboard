@@ -11,11 +11,14 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as Layout1Import } from './routes/_layout-1'
 import { Route as LayoutImport } from './routes/_layout'
 import { Route as IndexImport } from './routes/index'
 import { Route as LayoutWarehouseImport } from './routes/_layout/warehouse'
 import { Route as LayoutOrdersImport } from './routes/_layout/orders'
 import { Route as LayoutDashboardImport } from './routes/_layout/dashboard'
+import { Route as LayoutCustomersImport } from './routes/_layout/customers'
+import { Route as Layout1LoginImport } from './routes/_layout-1/login'
 import { Route as LayoutWarehouseIndexImport } from './routes/_layout/warehouse/index'
 import { Route as LayoutSettingsIndexImport } from './routes/_layout/settings/index'
 import { Route as LayoutOrdersIndexImport } from './routes/_layout/orders/index'
@@ -30,8 +33,15 @@ import { Route as LayoutDashboardReportsIndexImport } from './routes/_layout/das
 import { Route as LayoutDashboardOverviewIndexImport } from './routes/_layout/dashboard/overview/index'
 import { Route as LayoutDashboardAnalyticsIndexImport } from './routes/_layout/dashboard/analytics/index'
 import { Route as LayoutWarehouseProductsAddProductIndexImport } from './routes/_layout/warehouse/products/add-product/index'
+import { Route as LayoutWarehouseCategoriesAddCategoryIndexImport } from './routes/_layout/warehouse/categories/add-category/index'
+import { Route as LayoutWarehouseProductsAddProductPidImport } from './routes/_layout/warehouse/products/add-product/$pid'
 
 // Create/Update Routes
+
+const Layout1Route = Layout1Import.update({
+  id: '/_layout-1',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const LayoutRoute = LayoutImport.update({
   id: '/_layout',
@@ -58,6 +68,16 @@ const LayoutDashboardRoute = LayoutDashboardImport.update({
   getParentRoute: () => LayoutRoute,
 } as any)
 
+const LayoutCustomersRoute = LayoutCustomersImport.update({
+  path: '/customers',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const Layout1LoginRoute = Layout1LoginImport.update({
+  path: '/login',
+  getParentRoute: () => Layout1Route,
+} as any)
+
 const LayoutWarehouseIndexRoute = LayoutWarehouseIndexImport.update({
   path: '/',
   getParentRoute: () => LayoutWarehouseRoute,
@@ -79,8 +99,8 @@ const LayoutDashboardIndexRoute = LayoutDashboardIndexImport.update({
 } as any)
 
 const LayoutCustomersIndexRoute = LayoutCustomersIndexImport.update({
-  path: '/customers/',
-  getParentRoute: () => LayoutRoute,
+  path: '/',
+  getParentRoute: () => LayoutCustomersRoute,
 } as any)
 
 const LayoutSettingsLogoutRoute = LayoutSettingsLogoutImport.update({
@@ -137,6 +157,18 @@ const LayoutWarehouseProductsAddProductIndexRoute =
     getParentRoute: () => LayoutWarehouseRoute,
   } as any)
 
+const LayoutWarehouseCategoriesAddCategoryIndexRoute =
+  LayoutWarehouseCategoriesAddCategoryIndexImport.update({
+    path: '/categories/add-category/',
+    getParentRoute: () => LayoutWarehouseRoute,
+  } as any)
+
+const LayoutWarehouseProductsAddProductPidRoute =
+  LayoutWarehouseProductsAddProductPidImport.update({
+    path: '/products/add-product/$pid',
+    getParentRoute: () => LayoutWarehouseRoute,
+  } as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -154,6 +186,27 @@ declare module '@tanstack/react-router' {
       fullPath: ''
       preLoaderRoute: typeof LayoutImport
       parentRoute: typeof rootRoute
+    }
+    '/_layout-1': {
+      id: '/_layout-1'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof Layout1Import
+      parentRoute: typeof rootRoute
+    }
+    '/_layout-1/login': {
+      id: '/_layout-1/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof Layout1LoginImport
+      parentRoute: typeof Layout1Import
+    }
+    '/_layout/customers': {
+      id: '/_layout/customers'
+      path: '/customers'
+      fullPath: '/customers'
+      preLoaderRoute: typeof LayoutCustomersImport
+      parentRoute: typeof LayoutImport
     }
     '/_layout/dashboard': {
       id: '/_layout/dashboard'
@@ -185,10 +238,10 @@ declare module '@tanstack/react-router' {
     }
     '/_layout/customers/': {
       id: '/_layout/customers/'
-      path: '/customers'
-      fullPath: '/customers'
+      path: '/'
+      fullPath: '/customers/'
       preLoaderRoute: typeof LayoutCustomersIndexImport
-      parentRoute: typeof LayoutImport
+      parentRoute: typeof LayoutCustomersImport
     }
     '/_layout/dashboard/': {
       id: '/_layout/dashboard/'
@@ -267,6 +320,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutWarehouseProductsIndexImport
       parentRoute: typeof LayoutWarehouseImport
     }
+    '/_layout/warehouse/products/add-product/$pid': {
+      id: '/_layout/warehouse/products/add-product/$pid'
+      path: '/products/add-product/$pid'
+      fullPath: '/warehouse/products/add-product/$pid'
+      preLoaderRoute: typeof LayoutWarehouseProductsAddProductPidImport
+      parentRoute: typeof LayoutWarehouseImport
+    }
+    '/_layout/warehouse/categories/add-category/': {
+      id: '/_layout/warehouse/categories/add-category/'
+      path: '/categories/add-category'
+      fullPath: '/warehouse/categories/add-category'
+      preLoaderRoute: typeof LayoutWarehouseCategoriesAddCategoryIndexImport
+      parentRoute: typeof LayoutWarehouseImport
+    }
     '/_layout/warehouse/products/add-product/': {
       id: '/_layout/warehouse/products/add-product/'
       path: '/products/add-product'
@@ -282,6 +349,9 @@ declare module '@tanstack/react-router' {
 export const routeTree = rootRoute.addChildren({
   IndexRoute,
   LayoutRoute: LayoutRoute.addChildren({
+    LayoutCustomersRoute: LayoutCustomersRoute.addChildren({
+      LayoutCustomersIndexRoute,
+    }),
     LayoutDashboardRoute: LayoutDashboardRoute.addChildren({
       LayoutDashboardIndexRoute,
       LayoutDashboardAnalyticsIndexRoute,
@@ -295,14 +365,16 @@ export const routeTree = rootRoute.addChildren({
       LayoutWarehouseIndexRoute,
       LayoutWarehouseCategoriesIndexRoute,
       LayoutWarehouseProductsIndexRoute,
+      LayoutWarehouseProductsAddProductPidRoute,
+      LayoutWarehouseCategoriesAddCategoryIndexRoute,
       LayoutWarehouseProductsAddProductIndexRoute,
     }),
     LayoutSettingsLogoutRoute,
-    LayoutCustomersIndexRoute,
     LayoutSettingsIndexRoute,
     LayoutSettingsManagementIndexRoute,
     LayoutSettingsProfileIndexRoute,
   }),
+  Layout1Route: Layout1Route.addChildren({ Layout1LoginRoute }),
 })
 
 /* prettier-ignore-end */
@@ -314,7 +386,8 @@ export const routeTree = rootRoute.addChildren({
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/_layout"
+        "/_layout",
+        "/_layout-1"
       ]
     },
     "/": {
@@ -323,14 +396,31 @@ export const routeTree = rootRoute.addChildren({
     "/_layout": {
       "filePath": "_layout.tsx",
       "children": [
+        "/_layout/customers",
         "/_layout/dashboard",
         "/_layout/orders",
         "/_layout/warehouse",
         "/_layout/settings/logout",
-        "/_layout/customers/",
         "/_layout/settings/",
         "/_layout/settings/management/",
         "/_layout/settings/profile/"
+      ]
+    },
+    "/_layout-1": {
+      "filePath": "_layout-1.tsx",
+      "children": [
+        "/_layout-1/login"
+      ]
+    },
+    "/_layout-1/login": {
+      "filePath": "_layout-1/login.tsx",
+      "parent": "/_layout-1"
+    },
+    "/_layout/customers": {
+      "filePath": "_layout/customers.tsx",
+      "parent": "/_layout",
+      "children": [
+        "/_layout/customers/"
       ]
     },
     "/_layout/dashboard": {
@@ -357,6 +447,8 @@ export const routeTree = rootRoute.addChildren({
         "/_layout/warehouse/",
         "/_layout/warehouse/categories/",
         "/_layout/warehouse/products/",
+        "/_layout/warehouse/products/add-product/$pid",
+        "/_layout/warehouse/categories/add-category/",
         "/_layout/warehouse/products/add-product/"
       ]
     },
@@ -366,7 +458,7 @@ export const routeTree = rootRoute.addChildren({
     },
     "/_layout/customers/": {
       "filePath": "_layout/customers/index.tsx",
-      "parent": "/_layout"
+      "parent": "/_layout/customers"
     },
     "/_layout/dashboard/": {
       "filePath": "_layout/dashboard/index.tsx",
@@ -410,6 +502,14 @@ export const routeTree = rootRoute.addChildren({
     },
     "/_layout/warehouse/products/": {
       "filePath": "_layout/warehouse/products/index.tsx",
+      "parent": "/_layout/warehouse"
+    },
+    "/_layout/warehouse/products/add-product/$pid": {
+      "filePath": "_layout/warehouse/products/add-product/$pid.tsx",
+      "parent": "/_layout/warehouse"
+    },
+    "/_layout/warehouse/categories/add-category/": {
+      "filePath": "_layout/warehouse/categories/add-category/index.tsx",
       "parent": "/_layout/warehouse"
     },
     "/_layout/warehouse/products/add-product/": {

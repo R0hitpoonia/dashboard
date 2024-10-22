@@ -27,28 +27,8 @@ export const sidelinks: SideLink[] = [
   {
     title: "Dashboard",
     label: "",
-    href: "/dashboard",
+    href: "//dashboard/overview",
     icon: <LayoutDashboard size={18} />,
-    sub: [
-      {
-        title: "Overview",
-        label: "",
-        href: "/dashboard/overview",
-        icon: <ChartNoAxesGantt size={18} />,
-      },
-      {
-        title: "Analytics",
-        label: "",
-        href: "/dashboard/analytics",
-        icon: <ChartNoAxesColumn size={18} />,
-      },
-      {
-        title: "Reports",
-        label: "",
-        href: "/dashboard/report",
-        icon: <Library size={18} />,
-      },
-    ],
   },
   {
     title: "Warehouse",
@@ -65,7 +45,7 @@ export const sidelinks: SideLink[] = [
       {
         title: "Categories",
         label: "",
-        href: "/warehouse/categories/all",
+        href: "/warehouse/categories",
         icon: <Boxes size={18} />,
       },
     ],
@@ -82,30 +62,30 @@ export const sidelinks: SideLink[] = [
     href: "/customers",
     icon: <User size={18} />,
   },
-  {
-    title: "Setting",
-    label: "",
-    href: "/setting",
-    icon: <Bolt size={18} />,
-    sub: [
-      {
-        title: "Profile",
-        label: "",
-        href: "/setting/profile",
-        icon: <User size={18} />,
-      },
-      {
-        title: "Management",
-        label: "",
-        href: "/setting/management",
-        icon: <SquareChartGantt size={18} />,
-      },
-      {
-        title: "Logout",
-        label: "",
-        href: "/setting/logout",
-        icon: <Unplug size={18} />,
-      },
-    ],
-  },
+  // {
+  //   title: "Setting",
+  //   label: "",
+  //   href: "/setting",
+  //   icon: <Bolt size={18} />,
+  //   sub: [
+  //     {
+  //       title: "Profile",
+  //       label: "",
+  //       href: "/setting/profile",
+  //       icon: <User size={18} />,
+  //     },
+  //     {
+  //       title: "Management",
+  //       label: "",
+  //       href: "/setting/management",
+  //       icon: <SquareChartGantt size={18} />,
+  //     },
+  //     {
+  //       title: "Logout",
+  //       label: "",
+  //       href: "/setting/logout",
+  //       icon: <Unplug size={18} />,
+  //     },
+  //   ],
+  // },
 ];

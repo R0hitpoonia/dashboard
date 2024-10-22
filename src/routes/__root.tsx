@@ -1,5 +1,6 @@
 // import { AuthContext } from "@/lib/auth";
 import { ThemeProviderState } from "@/components/custom/theme-provider";
+import { AuthContext } from "@/lib/auth";
 import {
   Outlet,
   // createRootRoute,
@@ -8,7 +9,7 @@ import {
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 
 interface MyRouterContext {
-  //   auth: AuthContext;
+  auth: AuthContext;
   theme: ThemeProviderState;
 }
 

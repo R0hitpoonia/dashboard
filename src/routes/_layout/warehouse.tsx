@@ -11,25 +11,10 @@ export const Route = createFileRoute("/_layout/warehouse")({
 
 function Warehouse() {
   return (
-    <Layout>
-      <Layout.Header>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Warehouse</h1>
-          <CustomBreadcrumb />
-        </div>
-        <div className="ml-auto flex items-center space-x-4">
-          <Input
-            type="search"
-            placeholder="Search..."
-            className="md:w-[100px] lg:w-[300px]"
-          />
-          <ThemeSwitch />
-          <UserNav />
-        </div>
-      </Layout.Header>
+    <>
       {/* <Layout.Body> */}
       <Outlet />
       {/* </Layout.Body> */}
-    </Layout>
+    </>
   );
 }

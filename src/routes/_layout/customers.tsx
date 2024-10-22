@@ -5,11 +5,11 @@ import { UserNav } from "@/components/custom/user-nav";
 import { Input } from "@/components/ui/input";
 import { CustomBreadcrumb } from "@/components/custom/breadcrumb";
 
-export const Route = createFileRoute("/_layout/dashboard")({
-  component: Dashboard,
+export const Route = createFileRoute("/_layout/customers")({
+  component: Customers,
 });
 
-function Dashboard() {
+function Customers() {
   return (
     <>
       {/* <Layout.Body> */}

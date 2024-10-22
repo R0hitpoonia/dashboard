@@ -33,17 +33,25 @@ export interface registerUserRequest {
 }
 
 export interface Product {
-  name: string;
-  desc: string;
-  categories: string;
-  subCategories: string;
-  status: "draft" | "active" | "deactive";
-  stock: number;
+  _id: string;
+  pid: number;
+  productName: string;
+  description: string;
+  category: string;
+  subCategory: string;
   price: number;
+  qtyavailable: number;
   totalSales: number;
-  images: string;
-  createdAt: string;
-  modifiedAt: string;
+  status: "active" | "deactive" | "draft";
+  images: string[]; // array of image URLs
+  variants: Variant[]; // assuming Variant is another interface
+  addedAt: string; // ISO date string
+  modifiedAt: string; // ISO date string
+}
+
+export interface category {
+  name: string;
+  subCategory: Array<string>;
 }
 
 export interface Order {
@@ -90,7 +98,31 @@ export interface NewProductRequestBody {
   images: File[];
 }
 
+export interface EditProductRequestBody {
+  productName: string;
+  qtyavailable: number;
+  price: number;
+  category: string;
+  subCategory?: string;
+  description?: string;
+  variants: Variant[];
+  status: "active" | "deactive" | "draft";
+  newImages: File[];
+  images: string[];
+}
+
 export interface Variant {
   color: string;
   stock: number;
+}
+
+export interface User {
+  // id?: number; // Uncomment if you're using a custom id field, otherwise _id will be ObjectId by default
+  name: string;
+  email: string;
+  profilePhoto?: string;
+  // password: string;
+  address?: ShippingAddress[];
+  // spent: number; // Total amount spent by the user
+  role: "user";
 }

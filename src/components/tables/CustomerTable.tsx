@@ -21,227 +21,82 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Button } from "../ui/button";
-import { ArrowUpDown, ListFilter, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
+import { fetchUserData } from "@/lib/fakedata";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
-import {
-  useGetCategoriesQuery,
-  useGetProductsWithFilterMutation,
-} from "@/redux/api/authApi";
-import { category, Product } from "@/lib/schema";
-import { Link, redirect } from "@tanstack/react-router";
+import { User } from "@/lib/schema";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { useGetAllUserMutation } from "@/redux/api/authApi";
 
-export const productColumns: ColumnDef<Product>[] = [
+export const userColumns: ColumnDef<User>[] = [
   {
-    accessorKey: "images",
-    header: "Image",
+    accessorKey: "profilePhoto",
+    header: "Profile",
     cell: ({ row }) => {
-      const imageUrl = row.getValue("images")[0]; // Assuming you're using the first image from the array
+      const profilePhoto = row.getValue("profilePhoto");
       return (
-        <div
-          className="h-10 w-10 overflow-hidden bg-cover bg-center max-w-[100px]"
-          style={{ backgroundImage: `url(${imageUrl})` }}
-        ></div>
+        <Avatar>
+          <AvatarImage src={profilePhoto} />
+          <AvatarFallback>👤</AvatarFallback>
+        </Avatar>
       );
     },
-    enableSorting: false,
+    enableSorting: false, // Usually, we don't sort by profile photo
   },
   {
-    accessorKey: "productName",
+    accessorKey: "name",
     header: ({ column }) => (
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="text-center w-[250px]"
       >
-        Product Name
+        Name
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => (
-      <div className="text-center max-w-[250px]">
-        {row.getValue("productName")}
-      </div>
-    ),
+    cell: ({ row }) => <div>{row.getValue("name")}</div>,
     enableSorting: true,
   },
   {
-    accessorKey: "category",
+    accessorKey: "email",
     header: ({ column }) => (
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="text-center max-[150px]"
       >
-        Category
+        Email
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => (
-      <div className="text-center max-w-[150px] text-wrap">
-        {row.getValue("category")}
-      </div>
-    ),
+    cell: ({ row }) => <div>{row.getValue("email")}</div>,
     enableSorting: true,
   },
-  {
-    accessorKey: "status",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="text-center max-[150px]"
-      >
-        Status
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => (
-      <div className="capitalize text-center max-w-[150px]">
-        {row.getValue("status")}
-      </div>
-    ),
-    enableSorting: true,
-  },
-  {
-    accessorKey: "qtyavailable",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="text-center max-[150px]"
-      >
-        Quantity Available
-        <ArrowUpDown className="ml-2 h-4 w-4 " />
-      </Button>
-    ),
-    cell: ({ row }) => (
-      <div className="text-center max-w-[150px]">
-        {row.getValue("qtyavailable")}
-      </div>
-    ),
-    enableSorting: true,
-  },
-  {
-    accessorKey: "price",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="text-center"
-      >
-        Price (USD)
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => {
-      const price = parseFloat(row.getValue("price"));
-      const formattedPrice = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "INR",
-      }).format(price);
-      return <div className="text-center">{formattedPrice}</div>;
-    },
-    enableSorting: true,
-  },
-  {
-    accessorKey: "totalSales",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="text-center"
-      >
-        Total Sales
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => (
-      <div className="text-center">{row.getValue("totalSales")}</div>
-    ),
-    enableSorting: true,
-  },
-  {
-    accessorKey: "modifiedAt",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="text-center"
-      >
-        Last Modified
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => {
-      const modifiedAt = new Date(
-        row.getValue("modifiedAt")
-      ).toLocaleDateString();
-      return <div className="text-center">{modifiedAt}</div>;
-    },
-    enableSorting: true,
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const product = row.original;
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(product.productName)}
-            >
-              Copy product name
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Link to={`/warehouse/products/add-product/${product.pid}`}>
-                View/Edit details
-              </Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
+  // {
+  //   accessorKey: "spent",
+  //   header: ({ column }) => (
+  //     <Button
+  //       variant="ghost"
+  //       onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+  //     >
+  //       Sales
+  //       <ArrowUpDown className="ml-2 h-4 w-4" />
+  //     </Button>
+  //   ),
+  //   cell: ({ row }) => <div>{row.getValue("spent")}</div>,
+  // },
 ];
 
-const ProductTable = () => {
+const CustomerTable = () => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-  const [search, setSearch] = React.useState<string>("");
-  const [filter, setFilter] = React.useState<string>("");
-  const [categories, setCategories] = React.useState<category[]>([]);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [data, setData] = React.useState<Product[] | null>(null);
+  const [data, setData] = React.useState<User[] | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [rowCount, setRowCount] = React.useState(100);
   const [pagination, setPagination] = React.useState<PaginationState>({
@@ -249,39 +104,30 @@ const ProductTable = () => {
     pageSize: 10,
   });
 
-  const [getProduct, getProductHelper] = useGetProductsWithFilterMutation();
-  const getCategories = useGetCategoriesQuery(null);
+  const [getAllUsers, getAllUsersHelper] = useGetAllUserMutation();
+
+  React.useEffect(() => {
+    if (getAllUsersHelper.data) {
+      setData(getAllUsersHelper.data.data);
+      setRowCount(getAllUsersHelper.data.totalUsers);
+    }
+  }, [getAllUsersHelper.data]);
 
   React.useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      getProduct({
+      getAllUsers({
         pagination: pagination,
         sort: sorting,
-        search: search,
-        category: filter,
       });
       setLoading(false);
     };
     fetchData();
-  }, [pagination, sorting, search, filter]);
-
-  React.useEffect(() => {
-    if (getProductHelper.data) {
-      setData(getProductHelper.data.data);
-      setRowCount(getProductHelper.data.totalProducts);
-    }
-  }, [getProductHelper.data]);
-
-  React.useEffect(() => {
-    if (getCategories.isSuccess) {
-      setCategories(getCategories.data.categories);
-    }
-  }, [getCategories.data]);
+  }, [pagination, sorting]);
 
   const table = useReactTable({
     data: data ? data : [],
-    columns: productColumns,
+    columns: userColumns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -310,53 +156,16 @@ const ProductTable = () => {
       return (
         <Card>
           <CardHeader>
-            <div className="flex items-center">
-              <Input
-                placeholder="Filter names..."
-                // value={
-                //   (table.getColumn("productName")?.getFilterValue() as string) ??
-                //   ""
-                // }
-                // onChange={(event) =>
-                //   table
-                //     .getColumn("productName")
-                //     ?.setFilterValue(event.target.value)
-                // }
-                value={search}
-                onChange={(e) => {
-                  e.preventDefault();
-                  setSearch(e.target.value);
-                }}
-                className="max-w-sm"
-              />
-              <div className="ml-auto flex items-center gap-2">
-                <Select
-                  onValueChange={(value) => {
-                    setFilter(value);
-                  }}
-                >
-                  <SelectTrigger className="h-7 gap-1">
-                    {filter === "" ? (
-                      <>
-                        <ListFilter className="h-3.5 w-3.5" />
-                        <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                          Categories
-                        </span>
-                      </>
-                    ) : (
-                      filter
-                    )}
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((category) => (
-                      <SelectItem value={category.name}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+            <Input
+              placeholder="Filter names..."
+              value={
+                (table.getColumn("name")?.getFilterValue() as string) ?? ""
+              }
+              onChange={(event) =>
+                table.getColumn("name")?.setFilterValue(event.target.value)
+              }
+              className="max-w-sm"
+            />
           </CardHeader>
           <CardContent>
             <Table>
@@ -398,7 +207,7 @@ const ProductTable = () => {
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={productColumns.length}
+                      colSpan={userColumns.length}
                       className="h-24 text-center"
                     >
                       No results.
@@ -492,9 +301,9 @@ const ProductTable = () => {
                   </option>
                 ))}
               </select> */}
-              <span>{`sorting: ${JSON.stringify(sorting)}`}</span>
+              {/* <span>{`sorting: ${JSON.stringify(sorting)}`}</span>
               <span>{`columnFilters: ${JSON.stringify(columnFilters)}`}</span>
-              <span>{`rowSelection: ${JSON.stringify(rowSelection)}`}</span>
+              <span>{`rowSelection: ${JSON.stringify(rowSelection)}`}</span> */}
             </div>
           </CardFooter>
         </Card>
@@ -505,4 +314,4 @@ const ProductTable = () => {
   }
 };
 
-export default ProductTable;
+export default CustomerTable;
