@@ -1,5 +1,4 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { loginUser } from "../slice/authSlice";
 import {
   getUserResponse,
   loginUserRequest,

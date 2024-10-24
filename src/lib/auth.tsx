@@ -30,7 +30,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   } | null>(null);
   const [loginUser, loginUserHelper] = useLoginUserMutation();
   const [getUser, getUserHelper] = useLazyGetUserQuery();
-  const [logoutUser, logoutHelper] = useLogoutUserMutation();
+  const [logoutUser] = useLogoutUserMutation();
 
   function getStoredToken() {
     return sessionStorage.getItem(key);

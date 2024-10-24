@@ -67,7 +67,7 @@ function AddCategory() {
   if (addNewCategoryHelper.isError) {
     toast({
       title: "Error Adding Category",
-      description: JSON.stringify(addNewCategoryHelper.error.data.message),
+      description: JSON.stringify(addNewCategoryHelper.error),
       duration: 2500,
     });
   }

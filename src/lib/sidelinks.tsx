@@ -1,16 +1,10 @@
 import {
-  ChartNoAxesColumn,
-  ChartNoAxesGantt,
   LayoutDashboard,
-  Library,
   Box,
   PackageOpen,
   Boxes,
   ShoppingBag,
   User,
-  Bolt,
-  SquareChartGantt,
-  Unplug,
 } from "lucide-react";
 
 export interface NavLink {

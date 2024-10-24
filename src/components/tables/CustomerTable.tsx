@@ -24,7 +24,6 @@ import {
 
 import { Button } from "../ui/button";
 import { ArrowUpDown } from "lucide-react";
-import { fetchUserData } from "@/lib/fakedata";
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card";
 import { User } from "@/lib/schema";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -38,7 +37,7 @@ export const userColumns: ColumnDef<User>[] = [
       const profilePhoto = row.getValue("profilePhoto");
       return (
         <Avatar>
-          <AvatarImage src={profilePhoto} />
+          <AvatarImage src={`${profilePhoto ? profilePhoto : ""}`} />
           <AvatarFallback>👤</AvatarFallback>
         </Avatar>
       );

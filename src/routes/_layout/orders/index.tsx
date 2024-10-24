@@ -11,9 +11,8 @@ import {
 
 import OrderTable from "@/components/tables/OrderTable";
 import { PaginationState, SortingState } from "@tanstack/react-table";
-import { fetchOrderData } from "@/lib/fakedata";
 import React from "react";
-import { Order, OrderDetail } from "@/lib/schema";
+import { Order } from "@/lib/schema";
 import { Progress } from "@/components/ui/progress";
 import {
   DropdownMenu,

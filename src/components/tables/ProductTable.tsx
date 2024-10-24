@@ -26,7 +26,6 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 
 import {
@@ -45,14 +44,14 @@ import {
   useGetProductsWithFilterMutation,
 } from "@/redux/api/authApi";
 import { category, Product } from "@/lib/schema";
-import { Link, redirect } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 
 export const productColumns: ColumnDef<Product>[] = [
   {
     accessorKey: "images",
     header: "Image",
     cell: ({ row }) => {
-      const imageUrl = row.getValue("images")[0]; // Assuming you're using the first image from the array
+      const imageUrl = row.original.images[0]; // Assuming you're using the first image from the array
       return (
         <div
           className="h-10 w-10 overflow-hidden bg-cover bg-center max-w-[100px]"

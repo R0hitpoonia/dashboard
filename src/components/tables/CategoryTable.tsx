@@ -55,7 +55,7 @@ const categoryColumns: ColumnDef<category>[] = [
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div>{row.getValue("subCategory").join(", ")}</div>,
+    cell: ({ row }) => <div>{row.original.subCategory.join(", ")}</div>,
     enableSorting: true,
   },
 ];

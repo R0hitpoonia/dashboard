@@ -8,7 +8,7 @@ import {
   X,
 } from "lucide-react";
 
-import { Badge, badgeVariants } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -36,11 +36,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-// import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useState, useEffect } from "react";
-import { EditProductRequestBody, NewProductRequestBody } from "@/lib/schema";
+import { EditProductRequestBody } from "@/lib/schema";
 import {
-  useAddProductMutation,
   useEditProductMutation,
   useGetCategoriesQuery,
   useGetProductByIdQuery,
@@ -261,7 +259,9 @@ function EditProduct() {
                     <Textarea
                       id="description"
                       value={product.description}
-                      onChange={handleInputChange}
+                      onChange={() => {
+                        handleInputChange;
+                      }}
                       placeholder="Write discription for your product..."
                       className="min-h-32"
                     />
@@ -384,7 +384,7 @@ function EditProduct() {
                   <div className="grid gap-3">
                     <Label htmlFor="subcategory">Subcategory (optional)</Label>
                     <Select
-                      defaultValue={product.subcategory}
+                      defaultValue={product.subCategory}
                       onValueChange={(value) => {
                         setProduct((pre) => ({ ...pre, subCategory: value }));
                       }}

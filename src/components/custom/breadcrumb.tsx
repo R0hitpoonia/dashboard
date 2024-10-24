@@ -14,18 +14,16 @@ export function CustomBreadcrumb() {
   return (
     <Breadcrumb>
       {pathArray.map((path, index) => (
-        <>
-          <BreadcrumbItem key={index}>
-            {index === pathArray.length - 1 ? (
-              <BreadcrumbPage>{path}</BreadcrumbPage>
-            ) : (
-              <Link to={`/${pathArray.slice(0, index + 1).join("/")}`}>
-                {path}
-              </Link>
-            )}
-            {index < pathArray.length - 1 && <BreadcrumbSeparator />}
-          </BreadcrumbItem>
-        </>
+        <BreadcrumbItem key={index}>
+          {index === pathArray.length - 1 ? (
+            <BreadcrumbPage>{path}</BreadcrumbPage>
+          ) : (
+            <Link to={`/${pathArray.slice(0, index + 1).join("/")}`}>
+              {path}
+            </Link>
+          )}
+          {index < pathArray.length - 1 && <BreadcrumbSeparator />}
+        </BreadcrumbItem>
       ))}
     </Breadcrumb>
   );

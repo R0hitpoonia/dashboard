@@ -1,7 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ListFilter } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,15 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import CategoryTable from "@/components/tables/CategoryTable";
+
 import CustomerTable from "@/components/tables/CustomerTable";
 
 export const Route = createFileRoute("/_layout/customers/")({

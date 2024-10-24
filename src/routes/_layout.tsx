@@ -73,13 +73,6 @@ function Main() {
           </Layout.Header>
         </Layout>
         <Outlet />
-        <div>
-          {JSON.stringify({
-            user: auth.user ? auth.user : "no user",
-            authenticated: auth.isAuthenticated,
-            loading: auth.loading,
-          })}
-        </div>
       </main>
     </div>
   );

@@ -128,7 +128,7 @@ function Addproduct() {
   if (addNewProductHelper.isError) {
     toast({
       title: "Error Adding Product",
-      description: JSON.stringify(addNewProductHelper.error.data.message),
+      description: JSON.stringify(addNewProductHelper.error),
       duration: 2500,
     });
   }
@@ -204,7 +204,9 @@ function Addproduct() {
                     <Textarea
                       id="description"
                       value={product.description}
-                      onChange={handleInputChange}
+                      onChange={() => {
+                        handleInputChange;
+                      }}
                       placeholder="Write discription for your product..."
                       className="min-h-32"
                     />
